@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>pikachu靶场通关秘籍之CSRF | 是苹果啊</title><meta name="keywords" content="pikachu"><meta name="author" content="是苹果啊"><meta name="copyright" content="是苹果啊"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="CSRF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pikachu靶场通关秘籍之CSRF">
+<meta property="og:url" content="https://ddd887.github.io/archives/f3a6c1ad.html">
+<meta property="og:site_name" content="是苹果啊">
+<meta property="og:description" content="CSRF">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.888888.al/i/2023/08/15/w4var1.jpg">
+<meta property="article:published_time" content="2022-10-12T12:42:37.966Z">
+<meta property="article:modified_time" content="2023-08-15T11:43:33.769Z">
+<meta property="article:author" content="是苹果啊">
+<meta property="article:tag" content="pikachu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.888888.al/i/2023/08/15/w4var1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ddd887.github.io/archives/f3a6c1ad"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="code-zuJFBZJSKG"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'pikachu靶场通关秘籍之CSRF',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-08-15 19:43:33'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/constown/HexoCustomFile@0.0.4/dist/css/custom.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic.888888.al/i/2023/08/15/w4var1.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">是苹果啊</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">pikachu靶场通关秘籍之CSRF</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-12T12:42:37.966Z" title="发表于 2022-10-12 20:42:37">2022-10-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-08-15T11:43:33.769Z" title="更新于 2023-08-15 19:43:33">2023-08-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/pikachu/">pikachu</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="pikachu靶场通关秘籍之CSRF"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="CSRF-跨站请求伪造-攻击介绍"><a href="#CSRF-跨站请求伪造-攻击介绍" class="headerlink" title="CSRF(跨站请求伪造)攻击介绍"></a>CSRF(跨站请求伪造)攻击介绍</h2><pre><code>Cross-site request forgery 简称为“CSRF”，在CSRF的攻击场景中攻击者会伪造一个请求（这个请求一般是一个链接），然后欺骗目标用户进行点击，用户一旦点击了这个请求，整个攻击就完成了。所以CSRF攻击也成为&quot;one click&quot;攻击。 很多人搞不清楚CSRF的概念，甚至有时候会将其和XSS混淆,更有甚者会将其和越权问题混为一谈,这都是对原理没搞清楚导致的。
+这里列举一个场景解释一下，希望能够帮助你理解。
+场景需求：
+小黑想要修改大白在购物网站tianxiewww.xx.com上填写的会员地址。
+先看下大白是如何修改自己的密码的：
+登录---修改会员信息，提交请求---修改成功。
+所以小黑想要修改大白的信息，他需要拥有：1，登录权限 2，修改个人信息的请求。
+但是大白又不会把自己xxx网站的账号密码告诉小黑，那小黑怎么办？
+于是他自己跑到www.xx.com上注册了一个自己的账号，然后修改了一下自己的个人信息（比如：E-mail地址），他发现修改的请求是：
+【http://www.xxx.com/edit.php?email=xiaohei@88.com&amp;Change=Change】
+于是，他实施了这样一个操作：把这个链接伪装一下，在小白登录xxx网站后，欺骗他进行点击，小白点击这个链接后，个人信息就被修改了,小黑就完成了攻击目的。
+为啥小黑的操作能够实现呢。有如下几个关键点：
+1.www.xxx.com这个网站在用户修改个人的信息时没有过多的校验，导致这个请求容易被伪造;
+---因此，我们判断一个网站是否存在CSRF漏洞，其实就是判断其对关键信息（比如密码等敏感信息）的操作(增删改)是否容易被伪造。
+2.小白点击了小黑发给的链接，并且这个时候小白刚好登录在购物网上;
+---如果小白安全意识高，不点击不明链接，则攻击不会成功，又或者即使小白点击了链接，但小白此时并没有登录购物网站，也不会成功。
+---因此，要成功实施一次CSRF攻击，需要“天时，地利，人和”的条件。
+当然，如果小黑事先在xxx网的首页如果发现了一个XSS漏洞，则小黑可能会这样做： 欺骗小白访问埋伏了XSS脚本（盗取cookie的脚本）的页面，小白中招，小黑拿到小白的cookie，然后小黑顺利登录到小白的后台，小黑自己修改小白的相关信息。
+---所以跟上面比一下，就可以看出CSRF与XSS的区别：CSRF是借用户的权限完成攻击，攻击者并没有拿到用户的权限，而XSS是直接盗取到了用户的权限，然后实施破坏。 
+因此，网站如果要防止CSRF攻击，则需要对敏感信息的操作实施对应的安全措施，防止这些操作出现被伪造的情况，从而导致CSRF。比如：
+--对敏感信息的操作增加安全的token；
+--对敏感信息的操作增加安全的验证码；
+--对敏感信息的操作实施安全的逻辑流程，比如修改密码时，需要先校验旧密码等。
+
+如果你没有读太明白,不要犹豫,请再读一遍啦  
+</code></pre>
+<h2 id="CSRF-get"><a href="#CSRF-get" class="headerlink" title="CSRF(get)"></a>CSRF(get)</h2><p>通过以上的介绍，我们知道要想构成CSRF攻击，首先得诱导受害者点击我们的网页。我们先进入到其中一个用户的内部。<br><img src="https://pic.888888.al/i/2023/08/15/vowmxm.jpg" alt="1"><br>点击修改个人信息，修改手机号，点击提交并抓包。<br><img src="https://pic.888888.al/i/2023/08/15/vp0rov.jpg" alt="2"><br>将数据包中的<strong>GET</strong>和<strong>HOTS</strong>内容保存，并创建一个简单的html网页，代码如下:</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">HTML</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span> New Document <span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UIF-8&quot;</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://pikachu/vul/csrf/csrfget/csrf_get_edit.php?sex=&amp;phonenum=999&amp;add=&amp;email=&amp;submit=submit HTTP/1.1&quot;</span>&gt;</span>点我抽奖<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>效果如图:<br><img src="https://pic.888888.al/i/2023/08/15/vu9su0.jpg" alt="3"></p>
+<p>当用户点击 <em>点我抽奖</em> 时会触发CSRF攻击,直接修改了用户的手机号。<br><img src="https://pic.888888.al/i/2023/08/15/vue9k0.jpg" alt="4">  </p>
+<h2 id="CSRF-post"><a href="#CSRF-post" class="headerlink" title="CSRF(post)"></a>CSRF(post)</h2><p>如果是POST型的，所有参数在请求体中提交，我们不能通过伪造URL的方式进行攻击  </p>
+<p>攻击者可以搭建一个站点，在站点上做一个表单，诱导vince点击这个链接，当用户点击时，就会自动向存在CSRF的服务器提交POST请求修改个人信息。</p>
+<p>这里我们用Burp Suite自带的csrf功能构造一个站点:<br><img src="https://pic.888888.al/i/2023/08/15/vuu18s.jpg" alt="5"><br><img src="https://pic.888888.al/i/2023/08/15/vzsex7.jpg" alt="6"></p>
+<p>同上面操作一样即可。  </p>
+<h2 id="CSRF-token"><a href="#CSRF-token" class="headerlink" title="CSRF(token)"></a>CSRF(token)</h2><p><strong>CSRF的主要问题是敏感操作容易被伪造，我们可以加入Token让请求不容易被伪造，每次请求，都增加一个随机码（需要够随机，不容易被伪造），后台每次对这个随机码进行验证我们进入Pikachu平台的CSRF（token）页面并登录，我们可以看一下这个GET请求。</strong></p>
+<p><strong>跟前面比较，这里多了一个Token，如果后台对提交的Token进行了验证，由于Token是随机的，我们就无法伪造URL了，对于token，暂时还没有什么办法通过</strong></p>
+<p><strong>所以，使用token是一个很好的防御CSRF攻击的方法。</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ddd887.github.io">是苹果啊</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://ddd887.github.io/archives/f3a6c1ad.html">https://ddd887.github.io/archives/f3a6c1ad.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ddd887.github.io" target="_blank">是苹果啊</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/pikachu/">pikachu</a></div><div class="post_share"><div class="social-share" data-image="https://pic.888888.al/i/2023/08/15/w4var1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/c4c569e3.html"><img class="prev-cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">pikachu靶场通关秘籍之SQL</div></div></a></div><div class="next-post pull-right"><a href="/archives/77aee975.html"><img class="next-cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">pikachu靶场通关秘籍之XSS</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/archives/c4c569e3.html" title="pikachu靶场通关秘籍之SQL"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-13</div><div class="title">pikachu靶场通关秘籍之SQL</div></div></a></div><div><a href="/archives/77aee975.html" title="pikachu靶场通关秘籍之XSS"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">pikachu靶场通关秘籍之XSS</div></div></a></div><div><a href="/archives/ec9ffc46.html" title="pikachu靶场通关秘籍之暴力破解"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">pikachu靶场通关秘籍之暴力破解</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">是苹果啊</div><div class="author-info__description">步履不停</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ddd887"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/ddd887" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2301002710@qq.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://pic.888888.al/i/2023/08/15/12khmuy.png" rel="external nofollow noreferrer" target="_blank" title="QQ"><i class="fa-brands fa-qq"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">开心最重要！！！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0-%E6%94%BB%E5%87%BB%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">CSRF(跨站请求伪造)攻击介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF-get"><span class="toc-number">2.</span> <span class="toc-text">CSRF(get)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF-post"><span class="toc-number">3.</span> <span class="toc-text">CSRF(post)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF-token"><span class="toc-number">4.</span> <span class="toc-text">CSRF(token)</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞"><img src="https://pic.888888.al/i/2023/08/15/11byltz.jfif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KindEditor文件上传漏洞"/></a><div class="content"><a class="title" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞">KindEditor文件上传漏洞</a><time datetime="2023-08-15T14:47:15.977Z" title="发表于 2023-08-15 22:47:15">2023-08-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础"><img src="https://pic.888888.al/i/2023/08/15/10yo3t9.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JAVA反序列化漏洞基础"/></a><div class="content"><a class="title" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础">JAVA反序列化漏洞基础</a><time datetime="2023-04-23T13:00:50.304Z" title="发表于 2023-04-23 21:00:50">2023-04-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）"><img src="https://pic.888888.al/i/2023/08/15/10sg7xc.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kerberos协议详解（转载）"/></a><div class="content"><a class="title" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）">Kerberos协议详解（转载）</a><time datetime="2023-03-18T06:35:51.221Z" title="发表于 2023-03-18 14:35:51">2023-03-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/a4ebb772.html" title="PTH传递"><img src="https://pic.888888.al/i/2023/08/15/10x54bu.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PTH传递"/></a><div class="content"><a class="title" href="/archives/a4ebb772.html" title="PTH传递">PTH传递</a><time datetime="2023-03-16T13:08:25.595Z" title="发表于 2023-03-16 21:08:25">2023-03-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/397dc553.html" title="域信息收集命令"><img src="https://pic.888888.al/i/2023/08/15/10jdgg7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="域信息收集命令"/></a><div class="content"><a class="title" href="/archives/397dc553.html" title="域信息收集命令">域信息收集命令</a><time datetime="2023-03-15T09:09:19.260Z" title="发表于 2023-03-15 17:09:19">2023-03-15</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020d - 2023 By 是苹果啊</div><div class="footer_custom_text">到底啦，真的没有了😤</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

